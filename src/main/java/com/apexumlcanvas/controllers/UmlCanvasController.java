@@ -43,7 +43,7 @@ public class UmlCanvasController {
 		ApexClass[] apexClasses = 
 			toolingAPI.service.query(
 						"SELECT Id, Name, SymbolTable " + 
-						"FROM ApexClass" 
+						"FROM ApexClass Order By Name" 
 						, toolingAPI.session)
 				.getRecords().toArray(new ApexClass[0]);	
 		ArrayList<String> classNames = new ArrayList<String>();
