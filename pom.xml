@@ -203,7 +203,7 @@
 						</goals>
 						<configuration>
 							<bindingDirectory>src/bindings</bindingDirectory>
-							<wsdlDirectory>src/resources</wsdlDirectory>
+							<wsdlDirectory>src/main/resources</wsdlDirectory>
 							<xadditionalHeaders>true</xadditionalHeaders>
 						</configuration>
 					</execution>

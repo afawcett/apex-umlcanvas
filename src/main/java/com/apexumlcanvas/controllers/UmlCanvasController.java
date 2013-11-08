@@ -175,8 +175,10 @@ public class UmlCanvasController {
 		CanvasRequest canvasRequest = (CanvasRequest) session.getAttribute("canvasRequest");
 		if(session.getAttribute("session")!=null)
 			return (ToolingAPIConnection) session.getAttribute("session");
-		ToolingAPIConnection toolingApi = new ToolingAPIConnection();
-        SforceServiceService service = new SforceServiceService();
+		ToolingAPIConnection toolingApi = new ToolingAPIConnection();		
+        SforceServiceService service = 
+        	new SforceServiceService(
+        		UmlCanvasController.class.getResource("/tooling.wsdl"));
         toolingApi.service = service.getSforceService();
 		BindingProvider bp = (BindingProvider)toolingApi.service;
 		bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, "https://" + new URL(canvasRequest.getClient().getInstanceUrl()).getHost() + "/services/Soap/T/29.0");
