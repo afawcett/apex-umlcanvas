@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import canvas.CanvasRequest;
@@ -36,13 +37,14 @@ import com.apexumlcanvas.toolingapi.SymbolTable;
 public class UmlCanvasController {
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String load(HttpSession session, Map<String, Object> map) throws Exception
+	public String load(HttpSession session, Map<String, Object> map, @RequestParam(value = "includeinnerclasses", defaultValue = "false") Boolean includeInnerClasses) throws Exception
 	{
 		// List classes on the page
 		ToolingAPIConnection toolingAPI = createToolingAPIConnection(session);				
 		ApexClass[] apexClasses = 
 			toolingAPI.service.query(
-						"SELECT Id, Name, SymbolTable " + 
+						"SELECT Id, Name " +
+							(includeInnerClasses ? ", SymbolTable " : "") +
 						"FROM ApexClass Order By Name" 
 						, toolingAPI.session)
 				.getRecords().toArray(new ApexClass[0]);	
@@ -50,15 +52,18 @@ public class UmlCanvasController {
 		for(ApexClass apexClass : apexClasses)
 		{
 			// Add class to list to display on the page
-			classNames.add(apexClass.getName());
-			// Determine inner classes via Symbol table, sort and add to list
-			ArrayList<String> innerClasses = new ArrayList<String>();
-			if(apexClass.getSymbolTable()!=null)
-				for(SymbolTable innerClass : apexClass.getSymbolTable().getInnerClasses())
-					innerClasses.add(innerClass.getName());
-			Collections.sort(innerClasses);
-			for(String innerClassName : innerClasses)
-				classNames.add(apexClass.getName()+"."+innerClassName);
+			classNames.add(apexClass.getName());	
+			if(includeInnerClasses)
+			{
+				// Determine inner classes via Symbol table, sort and add to list
+				ArrayList<String> innerClasses = new ArrayList<String>();
+				if(apexClass.getSymbolTable()!=null)
+					for(SymbolTable innerClass : apexClass.getSymbolTable().getInnerClasses())
+						innerClasses.add(innerClass.getName());
+				Collections.sort(innerClasses);
+				for(String innerClassName : innerClasses)
+					classNames.add(apexClass.getName()+"."+innerClassName);
+			}
 		}
 		map.put("apexclasses", classNames);
 		

@@ -20,6 +20,7 @@ public class CanvasController {
 	    String secret = System.getenv("CANVAS_CONSUMER_SECRET");
 	    CanvasRequest request = SignedRequest.verifyAndDecode(signedRequest, secret);
 		session.setAttribute("canvasRequest", request);
+		session.setAttribute("session", null); // TODO: Need to figure out how to sync Spring Session with Salesforce Session switching
 		return "redirect:umlcanvas"; // Change this to redirect:navigator to load the jsmindmap demo
 	}
 }

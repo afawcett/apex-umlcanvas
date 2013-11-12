@@ -25,17 +25,19 @@
 	</style>
 </head>
 <body style="paddin:0px; margin:0px; font-size:75%; font-family:Arial,Helvetica,sans-serif">
-	<table>
+	<table style="table-layout:fixed; height:2000px">
 		<tr>
 			<td valign="top" style="white-space:nowrap; border-right:1px solid lightgrey">
-			<ul>
-				<c:forEach items="${apexclasses}" var="className">
-				<li><input id="${className}" type="checkbox" onclick="ApexNavigator.select('${className}');"/><label for="${className}">${className}</label></li>
-				</c:forEach>
-			</ul>
+				<div style="overflow:scroll; height:2000px">
+					<ul id="classlist">
+						<c:forEach items="${apexclasses}" var="className">
+							<li><input id="${className}" type="checkbox" onclick="ApexNavigator.select('${className}');"/><label for="${className}">${className}</label></li>
+						</c:forEach>
+					</ul>
+				</div>
 			</td>
-			<td style="border-left:1px solid lightgrey">
-    		<canvas id="myModel" width="2000" height="2000" style="background-image: url('/images/grid.png');"></canvas>
+			<td valign="top" style="border-left:1px solid lightgrey">
+	    		<canvas id="myModel" width="2000" height="2000" style="background-image: url('/images/grid.png');"></canvas>
     		</td>
     	</tr>
     </table>

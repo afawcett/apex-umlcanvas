@@ -61,15 +61,16 @@ var ApexNavigator = {
  		// Apex class being rendered on canvas
 		ApexNavigator.asyncClassName = apexClassName;
  		// Selected?
- 		var selected = $('#'+ApexNavigator.asyncClassName).prop('checked');
+ 		var selectedCheckbox = $('#'+ApexNavigator.asyncClassName);
+ 		var selected = selectedCheckbox.prop('checked');
  		// Retrieve symbol table for selected class and add to canvas
  		if(selected)
- 		{		 
+ 		{		
  			// Already have it?
  			if(ApexNavigator.diagram.getDiagramClass(ApexNavigator.asyncClassName)!=null)
  				return; 
- 			// TODO: Disable checkboxes
- 			// ...
+ 			// Disable checkboxes
+ 			$("#classlist :input").attr("disabled", true);
  			// Start Compile
 			$.ajax({	  				
                 type: 'GET',
@@ -86,7 +87,10 @@ var ApexNavigator = {
                     	alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                	// Report errors with the compile request
                 	alert(textStatus + errorThrown);
+		 			// Re-enable checkboxes
+		 			$("#classlist :input").attr("disabled", false);                	
                 }
 			});
  			// Retrieve Symbol Table		
@@ -137,14 +141,18 @@ var ApexNavigator = {
 	   				ApexNavigator.diagram.at(50,50).put(apexClass);		                
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                	// Report errors with the symbol table request
                 	alert(textStatus + errorThrown);
+		 			// Re-enable checkboxes
+		 			$("#classlist :input").attr("disabled", false);
                 }
 			});
 		}
 		else
 		{
-			// TODO: Figure out how to remove
-			// ...
+			// Inform the user the its not presently possible to remove items from the canvas and reselect the checkbox
+			alert('Currently it is not possible to remove items from the canvas.')
+ 			selectedCheckbox.attr('checked', 'true');			
 		}							
  	},
  	
@@ -166,10 +174,18 @@ var ApexNavigator = {
 					ApexNavigator.renderRelationships();
 				else
 					alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
+				// Clear aysnc state
+                ApexNavigator.asyncResult = null;
+	 			// Re-enable checkboxes
+	 			$("#classlist :input").attr("disabled", false);                
             },
             error: function(jqXHR, textStatus, errorThrown) {
+            	// Stop the timer, clear async state and report errors with the check async request
                 window.clearInterval(ApexNavigator.intervalId);
+                ApexNavigator.asyncResult = null;
             	alert(textStatus + errorThrown);
+	 			// Re-enable checkboxes
+	 			$("#classlist :input").attr("disabled", false);            	
             }
 		});			
  	},		 	
@@ -214,9 +230,14 @@ var ApexNavigator = {
 	                	}
 	                }
             	}	                	
+	 			// Re-enable checkboxes
+	 			$("#classlist :input").attr("disabled", false);
             },
             error: function(jqXHR, textStatus, errorThrown) {
+            	// Report errors with the symbol table request
             	alert(textStatus + errorThrown);
+	 			// Re-enable checkboxes
+	 			$("#classlist :input").attr("disabled", false);
             }
 		});			
  	}		 	
