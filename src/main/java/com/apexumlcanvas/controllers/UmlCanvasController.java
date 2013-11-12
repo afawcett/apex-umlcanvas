@@ -124,7 +124,7 @@ public class UmlCanvasController {
 		String containerAsyncRequestId = saveResults.get(0).getId();
 		ayncRequest = (ContainerAsyncRequest) 
 				toolingAPI.service.query(
-							"SELECT Id, State, MetadataContainerId " + 
+							"SELECT Id, State, MetadataContainerId, CompilerErrors " + 
 							"FROM ContainerAsyncRequest " + 
 							"WHERE Id = '" + containerAsyncRequestId + "' " 
 							, toolingAPI.session)
@@ -140,7 +140,7 @@ public class UmlCanvasController {
 		ToolingAPIConnection toolingAPI = createToolingAPIConnection(session);				
 		ContainerAsyncRequest ayncRequest = (ContainerAsyncRequest) 
 				toolingAPI.service.query(
-							"SELECT State, MetadataContainerId " + 
+							"SELECT Id, State, MetadataContainerId, CompilerErrors " + 
 							"FROM ContainerAsyncRequest " + 
 							"WHERE Id = '" + aysncRequestId + "' " 
 							, toolingAPI.session)
