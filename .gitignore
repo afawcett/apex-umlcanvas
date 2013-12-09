@@ -2,3 +2,4 @@ target
 /.settings
 /.project
 /.DS_Store
+/release.properties
