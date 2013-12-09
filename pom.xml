@@ -353,4 +353,15 @@
 			</plugins>
 		</pluginManagement>                
     </build>
+    <scm>
+    	<url>https://github.com/afawcett/apex-umlcanvas</url>
+    	<developerConnection>scm:git:ssh://github.com/afawcett/apex-umlcanvas.git</developerConnection>
+    	<connection>scm:git:git://github.com/afawcett/apex-umlcanvas.git</connection>
+    </scm>
+    <issueManagement>
+    	<system>Github</system>
+    	<url>https://github.com/afawcett/apex-umlcanvas/issues</url>
+    </issueManagement>
+    <inceptionYear>2013</inceptionYear>
+    <url>https://github.com/afawcett/apex-umlcanvas</url>
 </project>
