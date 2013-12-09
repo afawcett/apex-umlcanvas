@@ -3,3 +3,6 @@ target
 /.project
 /.DS_Store
 /release.properties
+/pom.xml.next
+/pom.xml.releaseBackup
+/pom.xml.tag
