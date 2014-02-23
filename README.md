@@ -15,4 +15,4 @@ For a full list of steps see my blog post above.
 Get Involved in Enhancing this Tool!
 ====================================
 
-There has been great deal of interest in this tool and enhancing it since i launched it ahead of Dreamforce 2013. I'd like to start a list of ideas and enhancements for and invite the community to help build those features. Watch this space!
+There has been great deal of interest in this tool and enhancing it since i launched it ahead of Dreamforce 2013. I'd like to start a list of ideas and enhancements for and invite the community to help build those features. Here is a list of [ideas](https://github.com/afawcett/apex-umlcanvas/blob/master/FeatureIdeas.md).
