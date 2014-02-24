@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
 	<types>
-		<members>*</members>
+		<members>ApexClassesSelector</members>
+		<members>fflib_SObjectDomain</members>
+		<members>fflib_SObjectDomainTest</members>
+		<members>fflib_SObjectSelector</members>
+		<members>fflib_SObjectSelectorTest</members>
+		<members>fflib_SObjectUnitOfWork</members>
+		<members>fflib_SObjectUnitOfWorkTest</members>
+		<members>fflib_StringBuilder</members>
+		<members>fflib_StringBuilderTest</members>
+		<members>ToolingAPI</members>
+		<members>ToolingAPIDemo</members>
+		<members>ToolingAPITest</members>
+		<members>UmlCanvasController</members>
+		<members>UmlCanvasService</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
-		<members>*</members>
-		<name>ApexComponent</name>
-	</types>
-	<types>
-		<members>*</members>
+		<members>umlcanvas</members>
 		<name>ApexPage</name>
 	</types>
-	<types>
-		<members>*</members>
-		<name>ApexTrigger</name>
-	</types>
-	<types>
-		<members>*</members>
+<types>
+		<members>ApexUML</members>
 		<name>CustomApplication</name>
 	</types>
 	<types>
-		<members>*</members>
+		<members>ApexUML</members>
 		<name>CustomTab</name>
 	</types>
 	<types>
-		<members>*</members>
+		<members>grid</members>
+		<members>umlcanvas</members>
+		<members>umlcanvaslib</members>
 		<name>StaticResource</name>
 	</types>
 	<version>28.0</version>
