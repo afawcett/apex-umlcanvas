@@ -30,6 +30,10 @@
         <name>CustomTab</name>
     </types>
     <types>
+        <members>Admin</members>
+        <name>Profile</name>
+    </types>
+    <types>
         <members>grid</members>
         <members>umlcanvas</members>
         <members>umlcanvaslib</members>
