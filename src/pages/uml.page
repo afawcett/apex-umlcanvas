@@ -1,0 +1,74 @@
+<apex:page controller="UmlController" showHeader="true" sidebar="false">
+<head>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/jquery-1.11.0.min.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/jquery-ui-1.10.4.custom.min.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/uml.js')}"/>
+
+    <apex:include pageName="{! $Page.ApexNavigator }"/>
+    
+ 
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/lib/Canvas2D.standalone.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/DepCheck.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/UmlCanvas.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Common.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Manager.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Model.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Diagram.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Class.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Attribute.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Operation.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Parameter.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/ConnectorHeads.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Association.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Role.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Dependency.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/ClientSupplier.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Interface.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Inheritance.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Realization.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Enumeration.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Note.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/NoteLink.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/StateDiagrams.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Widget.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/KickStart.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/PluginManagerRepository.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Defaults.js')}"/>
+    <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/Config.js')}"/>
+
+	<script>				
+		// Start compiling the classes on page load
+		$(document).ready(function() { ApexNavigator.load(); });		
+	</script>
+	<style>
+		ul {
+			list-style:none; 
+			margin: 0px;
+			padding: 4px;
+		}
+		ul li {
+			list-style:none; 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body style="paddin:0px; margin:0px; font-size:75%; font-family:Arial,Helvetica,sans-serif">
+	<table style="table-layout:fixed; height:2000px">
+		<tr>
+			<td valign="top" style="white-space:nowrap; border-right:1px solid lightgrey">
+				<div style="overflow:scroll; height:2000px">
+					<ul id="classlist">
+						<apex:repeat value="{!ApexClasses}" var="className">
+							<li><input id="{!className}" type="checkbox" onclick="ApexNavigator.select('{!className}');"/><label for="{!className}">{!className}</label></li>
+						</apex:repeat>
+					</ul>
+				</div>
+			</td>
+			<td valign="top" style="border-left:1px solid lightgrey">
+	    		<canvas id="myModel" width="2000" height="2000" style="background-image: url('{! urlfor($Resource.apexuml, '/images/grid.png')}');"></canvas>
+    		</td>
+    	</tr>
+    </table>
+</body>
+</apex:page>

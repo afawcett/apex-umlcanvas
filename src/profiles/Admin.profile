@@ -22,11 +22,11 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>UmlCanvasController</apexClass>
+        <apexClass>UmlController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>UmlCanvasService</apexClass>
+        <apexClass>UmlService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -62,7 +62,7 @@
         <enabled>true</enabled>
     </classAccesses>
     <pageAccesses>
-        <apexPage>umlcanvas</apexPage>
+        <apexPage>uml</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <tabVisibilities>

@@ -1,4 +1,4 @@
-public class UmlCanvasService 
+public class UmlService 
 {
 	public static ToolingApi.SymbolTable symbolTable(String className)
 	{

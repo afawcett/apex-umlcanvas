@@ -1,0 +1,91 @@
+<project name="ApexUml ANT Deployment Tasks" default="help" basedir="." 
+    xmlns:sf="antlib:com.salesforce">
+
+    <property name="build-properties-file-name" value="build.properties" />
+    <property name="build-properties-file" value="${basedir}/${build-properties-file-name}" />
+    <property name="temp-folder-name" value="target" />
+    <property name="destructive-changes-file-name" value="destructiveChanges.xml" />
+
+    
+    <path id="sfdc-ant-tasks.classpath" path="${basedir}/lib/ant-salesforce-29.0.jar" />
+
+    <typedef resource="com/salesforce/antlib.xml"
+               uri="antlib:com.salesforce"
+               classpathref="sfdc-ant-tasks.classpath" />
+
+    <property file="${build-properties-file}"/>
+    
+    <property environment="env"/>
+    
+    <available file="${build-properties-file}" type="file" property="local.property-File.present"/>
+    
+    <condition property="sf.username" value="${sf.target.username}" else="${arg.target.username}">
+        <available file="${build-properties-file}" />
+    </condition>
+
+    <condition property="sf.password" value="${sf.target.password}" else="${arg.target.password}">
+        <available file="${build-properties-file}" />
+    </condition>
+
+    <condition property="sf.securityToken" value="${sf.target.securityToken}" else="${arg.target.securityToken}">
+        <available file="${build-properties-file}" />
+    </condition>
+
+    <condition property="sf.serverurl" value="${sf.target.serverurl}" else="${arg.target.serverurl}">
+        <available file="${build-properties-file}" />
+    </condition>
+
+    <target name="package-resource-bundle-apexuml">
+        <delete file="${basedir}/resource-bundles/apexuml.zip" />
+        <zip basedir="${basedir}/resource-bundles/apexuml" destFile="${basedir}/resource-bundles/apexuml.zip" />
+    </target>
+    
+    <target name="install-resource-bundle-apexuml">
+        <copy file="${basedir}/resource-bundles/apexuml.zip" tofile="${basedir}/src/staticresources/apexuml.resource" />
+    </target>
+    
+    <target name="package-and-install-all-static-resources">
+        <antcall target="package-resource-bundle-apexuml"/>
+        <antcall target="install-resource-bundle-apexuml"/>
+    </target>
+    
+    <target name="help">
+        <echo>ANT targets available:</echo>
+        <echo>-----></echo>
+        <echo>----->package-resource-bundle-pulse</echo>
+        <echo>----->install-resource-bundle-pulse</echo>
+    	<echo>----->package-and-install-all-static-resources</echo>
+        <echo>----->createDefaultBuildPropertiesFile - create a default build.properties file which can be customized with the credentials to the SFDC ORG that you wish to deal with.</echo>
+    </target>
+
+    <target name="createDefaultBuildPropertiesFile">
+        <delete file="${build-properties-file}" />
+        <echo></echo>
+        <echo>Creating a new ${build-properties-file-name} at the project root.  Please edit the file with credentials in order to perform a deployment.</echo>
+        <echo></echo>
+        <echo file="${build-properties-file}" append="false"># build.properties${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">#${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true"># Specify the login credentials for the desired Salesforce organization${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true"># Use 'https://www.salesforce.com' for production or developer edition (the default if not specified).${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true"># Use 'https://test.salesforce.com for sandbox.${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.source.username=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.source.password=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.source.securityToken=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.source.serverurl=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.target.username=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.target.password=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.target.securityToken=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.target.serverurl=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.targetDelete.username=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.targetDelete.password=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.targetDelete.securityToken=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">sf.targetDelete.serverurl=${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true"># If your network requires an HTTP proxy, see http://ant.apache.org/manual/proxy.html for configuration.${line.separator}</echo>
+        <echo file="${build-properties-file}" append="true">#${line.separator}${line.separator}</echo>
+    </target>
+
+</project>

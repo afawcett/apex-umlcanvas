@@ -5,8 +5,8 @@
         <members>ToolingAPI</members>
         <members>ToolingAPIDemo</members>
         <members>ToolingAPITest</members>
-        <members>UmlCanvasController</members>
-        <members>UmlCanvasService</members>
+        <members>UmlController</members>
+        <members>UmlService</members>
         <members>fflib_SObjectDomain</members>
         <members>fflib_SObjectDomainTest</members>
         <members>fflib_SObjectSelector</members>
@@ -18,7 +18,8 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>umlcanvas</members>
+        <members>ApexNavigator</members>
+        <members>uml</members>
         <name>ApexPage</name>
     </types>
     <types>
@@ -34,9 +35,8 @@
         <name>Profile</name>
     </types>
     <types>
+        <members>apexuml</members>
         <members>grid</members>
-        <members>umlcanvas</members>
-        <members>umlcanvaslib</members>
         <name>StaticResource</name>
     </types>
     <version>29.0</version>
