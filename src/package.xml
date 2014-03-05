@@ -36,7 +36,6 @@
     </types>
     <types>
         <members>apexuml</members>
-        <members>grid</members>
         <name>StaticResource</name>
     </types>
     <version>29.0</version>
