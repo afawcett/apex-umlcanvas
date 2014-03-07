@@ -11,7 +11,6 @@ global class UmlController
 	@RemoteAction
 	public static ToolingApi.ContainerAsyncRequest compile(String className)
 	{
-		system.debug('method call to compile with className of '+className);
 		return UmlService.compile(className);
 	}
 
@@ -24,20 +23,12 @@ global class UmlController
     @RemoteAction
     global static ToolingApi.SymbolTable symbolTable(String className) 
     {
-    	system.debug('method call to symbolTable with className of '+className);
-    	
-    	ToolingApi.SymbolTable st = UmlService.symbolTable(className);
-    	
-    	system.debug('\n\n\nst = '+st+'\n\n\n' );
-    	
-        return st;
+    	return UmlService.symbolTable(className);
     }
 
-/*
 	@RemoteAction
-	public static ToolingApi.SymbolTable symbolTable(String asyncRequestId, String className)
+	public static ToolingApi.SymbolTable symbolTableFromCompile(String asyncRequestId, String className)
 	{
 		return UmlService.symbolTable(asyncRequestId, className);
 	}
-*/
 }

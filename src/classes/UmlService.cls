@@ -2,7 +2,13 @@ public class UmlService
 {
 	public static ToolingApi.SymbolTable symbolTable(String className)
 	{
-		return null;
+		ToolingApi toolingAPI = new ToolingApi();
+		List<ToolingAPI.ApexClass> apexClasses = (List<ToolingAPI.ApexClass>) 
+			toolingAPI.query(
+				'Select Name, SymbolTable ' + 
+				'From ApexClass ' + 
+				'Where Name = \'' + className + '\'').records;
+		return apexClasses[0].symbolTable;
 	}
 
 	public static ToolingApi.ContainerAsyncRequest compile(String className)

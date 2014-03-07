@@ -44,6 +44,7 @@ var ApexNavigator = {
             $("#classlist :input").attr("disabled", true);
             
             // Start Compile
+            /*
             Visualforce.remoting.Manager.invokeAction
             (
                 '{! $RemoteAction.UmlController.compile }'
@@ -52,11 +53,21 @@ var ApexNavigator = {
                     {
                         if (event.status)
                         {
-                            console.log(result);
+                            ApexNavigator.asyncResult = result;
+                            if(ApexNavigator.asyncResult.state == 'Completed')
+                                ApexNavigator.updateRelationships();
+                            else if(ApexNavigator.asyncResult.state == 'Queued')
+                                ApexNavigator.intervalId = 
+                                    window.setInterval(ApexNavigator.checkAsync, 2000);
+                            else
+                                alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
                         } 
                         else if (event.type === 'exception')
                         {
-                            
+                            // Report errors with the compile request
+                            alert(event.message);
+                            // Re-enable checkboxes
+                            $("#classlist :input").attr("disabled", false);                            
                         } 
                         else 
                         {
@@ -65,29 +76,8 @@ var ApexNavigator = {
                     }
                 , { escape:true }
             );
-            
-//            $.ajax({                    
-//                type: 'GET',
-//                url: 'umlcanvas/apexclass/' + ApexNavigator.asyncClassName + '/compile',
-//                contentType : 'application/json; charset=utf-8',                        
-//                dataType : 'json',
-//                success: function(data, textStatus, jqXHR) {
-//                    ApexNavigator.asyncResult = data;
-//                    if(ApexNavigator.asyncResult.state == 'Completed')
-//                        ApexNavigator.updateRelationships();
-//                    else if(ApexNavigator.asyncResult.state == 'Queued')
-//                        ApexNavigator.intervalId = window.setInterval(ApexNavigator.checkAsync, 2000);
-//                    else
-//                        alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
-//                },
-//                error: function(jqXHR, textStatus, errorThrown) {
-//                    // Report errors with the compile request
-//                    alert(textStatus + errorThrown);
-//                    // Re-enable checkboxes
-//                    $("#classlist :input").attr("disabled", false);                 
-//                }
-//            });
-            
+            */
+
             // Retrieve Symbol Table
             Visualforce.remoting.Manager.invokeAction
             (
@@ -97,11 +87,52 @@ var ApexNavigator = {
                     {
                         if (event.status)
                         {
-                            console.log(result);
+                            // Construct UML class
+                            var apexClass = new UmlCanvas.Class( { name: result.name } );
+                            // Add methods
+                            for(var i = 0; i < result.methods.length; i++)
+                            {
+                                var method = result.methods[i];
+                                // Only public methods
+                                if(method.visibility!='PUBLIC' && method.visibility!='GLOBAL')
+                                    continue;
+                                // Operation
+                                var operation = { 
+                                    visibility: "public",
+                                    name: method.name,
+                                    arguments: [],
+                                    returnType : method.returnType  };
+                                // Parameters?
+                                for(var a = 0; a < method.parameters.length; a++)
+                                    operation.arguments.push({
+                                            name : method.parameters[a].name,
+                                            type : method.parameters[a].type + ' ' + method.parameters[a].name
+                                        });
+                                // Add operation
+                                apexClass.addOperation( operation );
+                            }
+                            // Add Attributes 
+                            for(var i = 0; i < result.properties.length; i++)
+                            {
+                                var property = result.properties[i];
+                                // Only public methods
+                                if(property.visibility!='PUBLIC' && property.visibility!='GLOBAL')
+                                    continue;
+                                // Add attribute
+                                apexClass.addAttribute( 
+                                    { visibility: "public", 
+                                      name: property.name, 
+                                      type: property.type } );                              
+                            }
+                            // Place it on the canvas        
+                            ApexNavigator.diagram.at(50,50).put(apexClass);                     
                         } 
                         else if (event.type === 'exception')
                         {
-                            
+                            // Report errors with the symbol table request
+                            alert(event.message);
+                            // Re-enable checkboxes
+                            $("#classlist :input").attr("disabled", false);                            
                         } 
                         else 
                         {
@@ -110,63 +141,6 @@ var ApexNavigator = {
                     }
                 , { escape:true }
             );
-            
-
-
-//
-//            $.ajax({
-//                type: 'GET',
-//                url: 'umlcanvas/apexclass/' + ApexNavigator.asyncClassName + '/symboltable',
-//                contentType : 'application/json; charset=utf-8',
-//                dataType : 'json',
-//                success: function(data, textStatus, jqXHR) {
-//                    // Construct UML class
-//                    var apexClass = new UmlCanvas.Class( { name: data.name } );
-//                    // Add methods
-//                    for(var i = 0; i < data.methods.length; i++)
-//                    {
-//                        var method = data.methods[i];
-//                        // Only public methods
-//                        if(method.visibility!='PUBLIC' && method.visibility!='GLOBAL')
-//                            continue;
-//                        // Operation
-//                        var operation = { 
-//                            visibility: "public",
-//                            name: method.name,
-//                            arguments: [],
-//                            returnType : method.returnType  };
-//                        // Parameters?
-//                        for(var a = 0; a < method.parameters.length; a++)
-//                            operation.arguments.push({
-//                                    name : method.parameters[a].name,
-//                                    type : method.parameters[a].type + ' ' + method.parameters[a].name
-//                                });
-//                        // Add operation
-//                        apexClass.addOperation( operation );
-//                    }
-//                    // Add Attributes 
-//                    for(var i = 0; i < data.properties.length; i++)
-//                    {
-//                        var property = data.properties[i];
-//                        // Only public methods
-//                        if(property.visibility!='PUBLIC' && property.visibility!='GLOBAL')
-//                            continue;
-//                        // Add attribute
-//                        apexClass.addAttribute( 
-//                            { visibility: "public", 
-//                              name: property.name, 
-//                              type: property.type } );                              
-//                    }
-//                    // Place it on the canvas        
-//                    ApexNavigator.diagram.at(50,50).put(apexClass);                     
-//                },
-//                error: function(jqXHR, textStatus, errorThrown) {
-//                    // Report errors with the symbol table request
-//                    alert(textStatus + errorThrown);
-//                    // Re-enable checkboxes
-//                    $("#classlist :input").attr("disabled", false);
-//                }
-//            });
         }
         else
         {
