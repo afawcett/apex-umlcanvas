@@ -23,7 +23,7 @@
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
-global with sharing class ToolingAPI {
+public with sharing class ToolingAPI {
 
     // The API version used relates to the types and structures defined here
     private static final String TOOLING_API_URI = '/services/data/v29.0/tooling';
@@ -945,7 +945,7 @@ global with sharing class ToolingAPI {
         public String     type_x;
     }
 
-    global class SymbolTable {
+    public class SymbolTable {
         public Symbol[]            constructors;
         public ExternalReference[] externalReferences;
         public Id                  id;

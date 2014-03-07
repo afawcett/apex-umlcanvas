@@ -1,4 +1,4 @@
-global class UmlController 
+public class UmlController 
 {
 	public List<String> getApexClasses()
 	{
@@ -21,7 +21,7 @@ global class UmlController
 	}
 
     @RemoteAction
-    global static ToolingApi.SymbolTable symbolTable(String className) 
+    public static ToolingApi.SymbolTable symbolTable(String className) 
     {
     	return UmlService.symbolTable(className);
     }
