@@ -8,6 +8,8 @@ public class UmlService
 				'Select Name, SymbolTable ' + 
 				'From ApexClass ' + 
 				'Where Name = \'' + className + '\'').records;
+		if(apexClasses.size()==0)
+			throw new UmlServiceException('Apex Class ' + className + ' not found');
 		return apexClasses[0].symbolTable;
 	}
 
@@ -25,4 +27,6 @@ public class UmlService
 	{
 		return null;
 	}
+
+	public class UmlServiceException extends Exception { }
 }
