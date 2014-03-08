@@ -7,6 +7,51 @@ var UMLCANVAS_VERSION = 'Development';
 // Define the client side app that drives the comms to the server
 var ApexNavigator = {
 
+    constructUMLClass : function (classSymbolTable) {
+
+        // Construct UML class
+        var apexUMLClass = new UmlCanvas.Class( { name: classSymbolTable.name } );
+        
+        // Add methods
+        for(var i = 0; i < classSymbolTable.methods.length; i++)
+        {
+            var method = classSymbolTable.methods[i];
+            // Only public methods
+            if(method.visibility!='PUBLIC' && method.visibility!='GLOBAL')
+                continue;
+            // Operation
+            var operation = { 
+                visibility: "public",
+                name: method.name,
+                arguments: [],
+                returnType : method.returnType  };
+            // Parameters?
+            for(var a = 0; a < method.parameters.length; a++)
+                operation.arguments.push({
+                        name : method.parameters[a].name,
+                        type : method.parameters[a].type + ' ' + method.parameters[a].name
+                    });
+            // Add operation
+            apexUMLClass.addOperation( operation );
+        }
+        
+        // Add Attributes 
+        for(var i = 0; i < classSymbolTable.properties.length; i++)
+        {
+            var property = classSymbolTable.properties[i];
+            // Only public methods
+            if(property.visibility!='PUBLIC' && property.visibility!='GLOBAL')
+                continue;
+            // Add attribute
+            apexUMLClass.addAttribute( 
+                { visibility: "public", 
+                  name: property.name, 
+                  type: property.type } );                              
+        }
+        
+        return apexUMLClass
+    },
+
     // ContainerAsyncRequest
     asyncResult : null,
     
@@ -87,45 +132,16 @@ var ApexNavigator = {
                     {
                         if (event.status)
                         {
-                            // Construct UML class
-                            var apexClass = new UmlCanvas.Class( { name: result.name } );
-                            // Add methods
-                            for(var i = 0; i < result.methods.length; i++)
-                            {
-                                var method = result.methods[i];
-                                // Only public methods
-                                if(method.visibility!='PUBLIC' && method.visibility!='GLOBAL')
-                                    continue;
-                                // Operation
-                                var operation = { 
-                                    visibility: "public",
-                                    name: method.name,
-                                    arguments: [],
-                                    returnType : method.returnType  };
-                                // Parameters?
-                                for(var a = 0; a < method.parameters.length; a++)
-                                    operation.arguments.push({
-                                            name : method.parameters[a].name,
-                                            type : method.parameters[a].type + ' ' + method.parameters[a].name
-                                        });
-                                // Add operation
-                                apexClass.addOperation( operation );
-                            }
-                            // Add Attributes 
-                            for(var i = 0; i < result.properties.length; i++)
-                            {
-                                var property = result.properties[i];
-                                // Only public methods
-                                if(property.visibility!='PUBLIC' && property.visibility!='GLOBAL')
-                                    continue;
-                                // Add attribute
-                                apexClass.addAttribute( 
-                                    { visibility: "public", 
-                                      name: property.name, 
-                                      type: property.type } );                              
-                            }
                             // Place it on the canvas        
-                            ApexNavigator.diagram.at(50,50).put(apexClass);                     
+                            ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result));
+                            
+                            // Process inner classes, if present
+//					        for(var i = 0; i < result.innerClasses.length; i++)
+//					        {
+//                                // For each number, move the class to each grid
+//                                ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result.innerClasses[i]));
+//					        }
+					        
                         } 
                         else if (event.type === 'exception')
                         {
