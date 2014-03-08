@@ -8,9 +8,22 @@ var UMLCANVAS_VERSION = 'Development';
 var ApexNavigator = {
 
     constructUMLClass : function (classSymbolTable) {
+        return constructUMLClass( classSymbolTable, null );
+    },
+
+    constructUMLClass : function (classSymbolTable, parentClassName) {
 
         // Construct UML class
-        var apexUMLClass = new UmlCanvas.Class( { name: classSymbolTable.name } );
+        var className = '';
+        
+        if (parentClassName != 'null')
+        {
+            className += parentClassName + '.';
+        }
+        
+        className += classSymbolTable.name;
+        
+        var apexUMLClass = new UmlCanvas.Class( { name: className } );
         
         // Add methods
         for(var i = 0; i < classSymbolTable.methods.length; i++)
@@ -136,11 +149,11 @@ var ApexNavigator = {
                             ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result));
                             
                             // Process inner classes, if present
-//					        for(var i = 0; i < result.innerClasses.length; i++)
-//					        {
-//                                // For each number, move the class to each grid
-//                                ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result.innerClasses[i]));
-//					        }
+					        for(var i = 0; i < result.innerClasses.length; i++)
+					        {
+                                // For each number, move the class to each grid
+                                ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result.innerClasses[i], result.name));
+					        }
 					        
                         } 
                         else if (event.type === 'exception')
