@@ -131,13 +131,13 @@ var ApexNavigator = {
                         {
                             // Report errors with the symbol table request
                             alert(event.message);
-                            // Re-enable checkboxes
-                            $("#classlist :input").attr("disabled", false);                            
                         } 
                         else 
                         {
                             
                         }
+                        // Re-enable checkboxes
+                        $("#classlist :input").attr("disabled", false);                            
                     }
                 , { escape:true }
             );
