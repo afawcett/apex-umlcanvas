@@ -16,7 +16,7 @@ var ApexNavigator = {
         // Construct UML class
         var className = '';
         
-        if (parentClassName != 'null')
+        if (parentClassName != undefined)
         {
             className += parentClassName + '.';
         }
