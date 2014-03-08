@@ -62,6 +62,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <pageAccesses>
+        <apexPage>ApexNavigator</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
         <apexPage>uml</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
