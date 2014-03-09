@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Profile xmlns="http://soap.sforce.com/2006/04/metadata">
     <applicationVisibilities>
-        <application>ApexUML</application>
-        <default>true</default>
+        <application>ApexUMLCanvas</application>
+        <default>false</default>
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
@@ -70,7 +70,7 @@
         <enabled>true</enabled>
     </pageAccesses>
     <tabVisibilities>
-        <tab>ApexUML</tab>
+        <tab>ApexUMLCanvas</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
     <userLicense>Salesforce</userLicense>
