@@ -4,8 +4,7 @@
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/jquery-ui-1.10.4.custom.min.js')}"/>
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/uml.js')}"/>
 
-    <apex:include pageName="{! $Page.ApexNavigator }"/>
-    
+    <c:uml />
  
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/lib/Canvas2D.standalone.js')}"/>
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/umlcanvas/DepCheck.js')}"/>

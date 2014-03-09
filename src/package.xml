@@ -18,7 +18,10 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>ApexNavigator</members>
+        <members>uml</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
         <members>uml</members>
         <name>ApexPage</name>
     </types>

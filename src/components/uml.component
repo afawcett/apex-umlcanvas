@@ -1,5 +1,4 @@
-<apex:page showHeader="false" sidebar="false" controller="UmlController"
-applyHtmlTag="false" applyBodyTag="false" standardStylesheets="false">
+<apex:component controller="UmlController">
 <script type="application/javascript">
 // Load the UML Canvas JS Library
 var UMLCANVAS_VERSION = 'Development';
@@ -91,12 +90,12 @@ var ApexNavigator = {
                             // Process inner classes, if present
                             // TODO: Discuss inner class support, currently ExternalReferences don't include inner class references :-( 
                             /*
-					        for(var i = 0; i < result.innerClasses.length; i++)
-					        {
+                            for(var i = 0; i < result.innerClasses.length; i++)
+                            {
                                 // For each number, move the class to each grid
                                 ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result.innerClasses[i], result.name));
-					        }
-                            */					        
+                            }
+                            */                          
                         } 
                         else if (event.type === 'exception')
                         {
@@ -285,5 +284,4 @@ var ApexNavigator = {
     }    
 }  
 </script>
-
-</apex:page>
+</apex:component>
