@@ -23,11 +23,11 @@
         <name>ApexPage</name>
     </types>
     <types>
-        <members>ApexUML</members>
+        <members>ApexUMLCanvas</members>
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>ApexUML</members>
+        <members>ApexUMLCanvas</members>
         <name>CustomTab</name>
     </types>
     <types>
