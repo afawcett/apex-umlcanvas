@@ -22,17 +22,17 @@ public class UmlService
 			throw new UmlServiceException('Apex Class ' + className + ' not found');
 
 		// Delete any existing MetadataContainer?
-		ToolingApi toolingAPI = new ToolingApi();
+		ToolingApi tooling = new ToolingApi();
 		List<ToolingAPI.MetadataContainer> containers = (List<ToolingAPI.MetadataContainer>)
-			toolingAPI.query(
+			tooling.query(
 				'SELECT Id, Name FROM MetadataContainer WHERE Name = \'ApexNavigator\'').records;
 		if(containers!=null &&  containers.size()>0)
-			toolingAPI.deleteSObject('MetadataContainer', containers[0].Id);
+			tooling.deleteSObject(ToolingAPI.SObjectType.MetadataContainer, containers[0].Id);
 
 		// Create MetadataContainer
 		ToolingAPI.MetadataContainer container = new ToolingAPI.MetadataContainer();
 		container.name = 'ApexNavigator';
-		ToolingAPI.SaveResult containerSaveResult = toolingApi.createSObject(container);
+		ToolingAPI.SaveResult containerSaveResult = tooling.createSObject(container);
 		if(!containerSaveResult.success)
 			throw makeException(containerSaveResult);
 		Id containerId = containerSaveResult.id;
@@ -42,7 +42,7 @@ public class UmlService
 		apexClassMember.Body = classes.get(className).Body;
 		apexClassMember.ContentEntityId = classes.get(className).id;
 		apexClassMember.MetadataContainerId = containerId;
-		ToolingAPI.SaveResult apexClassMemberSaveResult = toolingAPI.createSObject(apexClassMember);
+		ToolingAPI.SaveResult apexClassMemberSaveResult = tooling.createSObject(apexClassMember);
 		if(!apexClassMemberSaveResult.success)
 			throw makeException(apexClassMemberSaveResult);
 
@@ -50,11 +50,11 @@ public class UmlService
 		ToolingAPI.ContainerAsyncRequest asyncRequest = new ToolingAPI.ContainerAsyncRequest();
 		asyncRequest.metadataContainerId = containerId;
 		asyncRequest.IsCheckOnly = true;
-		ToolingAPI.SaveResult asyncRequestSaveResult = toolingAPI.createSObject(asyncRequest);		
+		ToolingAPI.SaveResult asyncRequestSaveResult = tooling.createSObject(asyncRequest);		
 		if(!asyncRequestSaveResult.success)
 			throw makeException(asyncRequestSaveResult);		
 		asyncRequest = ((List<ToolingAPI.ContainerAsyncRequest>)
-			toolingAPI.query(
+			tooling.query(
 				'SELECT Id, State, MetadataContainerId, CompilerErrors ' + 
 				'FROM ContainerAsyncRequest ' + 
 				'WHERE Id = \'' + asyncRequestSaveResult.Id + '\'').records)[0];
