@@ -1,0 +1,287 @@
+<apex:component controller="UmlController">
+<script type="application/javascript">
+// Load the UML Canvas JS Library
+var UMLCANVAS_VERSION = 'Development';
+
+// Define the client side app that drives the comms to the server
+var ApexNavigator = {
+
+    // ContainerAsyncRequest
+    asyncResult : null,
+    
+    // Apex Class being compiled in the MetadataContainer
+    asyncApexClassName : null, 
+    
+    // Client timer Id used to poll 
+    intervalId : null,
+
+    // Diagram
+    diagram : null, 
+    
+    load : function() {
+        // Initialise UmlCanvas
+        var manager = new UmlCanvas.Manager();
+        var model = manager.setupModel("myModel");
+        ApexNavigator.diagram = model.addDiagram();
+        ApexNavigator.diagram.makeDynamic();        
+        manager.startAll();
+    },
+    
+    select : function(apexClassName) {
+        // Apex class being rendered on canvas
+        ApexNavigator.asyncClassName = apexClassName;
+        // Selected?
+        var selectedCheckbox = $('#'+ApexNavigator.asyncClassName);
+        var selected = selectedCheckbox.prop('checked');
+        // Retrieve symbol table for selected class and add to canvas
+        if(selected)
+        {       
+            // Already have it?
+            if(ApexNavigator.diagram.getDiagramClass(ApexNavigator.asyncClassName)!=null)
+                return; 
+            // Disable checkboxes
+            $("#classlist :input").attr("disabled", true);
+            
+            // Start Compile
+            Visualforce.remoting.Manager.invokeAction
+            (
+                '{! $RemoteAction.UmlController.compile }'
+                , ApexNavigator.asyncClassName
+                ,   function(result, event)
+                    {
+                        if (event.status)
+                        {
+                            ApexNavigator.asyncResult = result;
+                            if(ApexNavigator.asyncResult.state == 'Completed')
+                                ApexNavigator.updateRelationships();
+                            else if(ApexNavigator.asyncResult.state == 'Queued')
+                                ApexNavigator.intervalId = 
+                                    window.setInterval(ApexNavigator.checkAsync, 2000);
+                            else
+                                alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
+                        } 
+                        else if (event.type === 'exception')
+                        {
+                            // Report errors with the compile request
+                            alert(event.message + event.where);
+                            // Re-enable checkboxes
+                            $("#classlist :input").attr("disabled", false);                            
+                        } 
+                        else 
+                        {
+                            
+                        }
+                    }
+                , { escape:true }
+            );
+
+            // Retrieve Symbol Table
+            Visualforce.remoting.Manager.invokeAction
+            (
+                '{! $RemoteAction.UmlController.symbolTable }'
+                , ApexNavigator.asyncClassName
+                ,   function(result, event)
+                    {
+                        if (event.status)
+                        {
+                            // Place it on the canvas        
+                            ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result));
+                            
+                            // Process inner classes, if present
+                            // TODO: Discuss inner class support, currently ExternalReferences don't include inner class references :-( 
+                            /*
+                            for(var i = 0; i < result.innerClasses.length; i++)
+                            {
+                                // For each number, move the class to each grid
+                                ApexNavigator.diagram.at(50,50).put(ApexNavigator.constructUMLClass(result.innerClasses[i], result.name));
+                            }
+                            */                          
+                        } 
+                        else if (event.type === 'exception')
+                        {
+                            // Report errors with the symbol table request
+                            alert(event.message);
+                        } 
+                        else 
+                        {
+                            // TODO: What are we doing here?
+                        }
+                    }
+                , { escape:true }
+            );
+        }
+        else
+        {
+            // Inform the user the its not presently possible to remove items from the canvas and reselect the checkbox
+            alert('Currently it is not possible to remove items from the canvas.')
+            selectedCheckbox.attr('checked', 'true');           
+        }                           
+    },
+    
+    checkAsync : function() {
+
+        // Check status of Async Compile request if complete render relationships        
+        Visualforce.remoting.Manager.invokeAction
+        (
+            '{! $RemoteAction.UmlController.containerAsyncRequest }'
+            , ApexNavigator.asyncResult.id
+            ,   function(result, event)
+                {
+                    if (event.status)
+                    {
+                        ApexNavigator.asyncResult = result;
+                        // Continue to wait?
+                        if(ApexNavigator.asyncResult.state == 'Queued')
+                            return;
+                        // Stop the timer
+                        window.clearInterval(ApexNavigator.intervalId);                
+                        if(ApexNavigator.asyncResult.state == 'Completed')
+                            ApexNavigator.renderRelationships();
+                        else
+                        {
+                            alert(ApexNavigator.asyncResult.state + ApexNavigator.asyncResult.compilerErrors);
+                            // Re-enable checkboxes
+                            $("#classlist :input").attr("disabled", false);   
+                        }
+                        // Clear aysnc state
+                        ApexNavigator.asyncResult = null;
+                    } 
+                    else if (event.type === 'exception')
+                    {
+                        // Stop the timer, clear async state and report errors with the check async request
+                        window.clearInterval(ApexNavigator.intervalId);
+                        ApexNavigator.asyncResult = null;
+                        alert(event.message);
+                        // Re-enable checkboxes
+                        $("#classlist :input").attr("disabled", false);
+                    } 
+                    else 
+                    {
+                        // TODO: What are we doing here?    
+                    }
+                }
+            , { escape:true }
+        );
+    },          
+    
+    renderRelationships : function() {
+
+        // Retrieve Symbol Table following compilation (includes external references)
+        Visualforce.remoting.Manager.invokeAction
+        (
+            '{! $RemoteAction.UmlController.symbolTableFromCompile }'
+            , ApexNavigator.asyncResult.metadataContainerId
+            , ApexNavigator.asyncClassName
+            ,   function(result, event)
+                {
+                    if (event.status)
+                    {
+                        // Store this SymbolTable against the class
+                        var umlClass = ApexNavigator.diagram.getDiagramClass(ApexNavigator.asyncClassName);
+                        umlClass.symbolTable = result;
+                        // Iterate over the classes in the canvas and render any dependency relationships
+                        for(var shapeName in ApexNavigator.diagram.shapesMap)
+                        {
+                            var fromClass = ApexNavigator.diagram.getDiagramClass(shapeName);
+                            if(fromClass instanceof UmlCanvas.Class)
+                            {
+                                for(var i = 0; i < fromClass.symbolTable.externalReferences.length; i++)
+                                {                 
+                                    var externalReference = fromClass.symbolTable.externalReferences[i];
+                                    var toClass = ApexNavigator.diagram.getDiagramClass(externalReference.name);
+                                    if(toClass == null)
+                                        continue;                                                       
+                                    var association = 
+                                        new UmlCanvas.Realization(
+                                            { from: toClass,
+                                              to: fromClass, 
+                                              kind: "association",
+                                              name: toClass.name+'#'+fromClass.name, 
+                                              routing: 'vertical',
+                                              lineWidth: 2,
+                                              labelFont: '10pt Arial,Helvetica,sans-serif',
+                                              navigability: 'destination' } );  
+                                    association.centerLabel = '<<use>>';                                                
+                                    ApexNavigator.diagram.put(association);                         
+                                }
+                            }
+                        }                       
+                        // Re-enable checkboxes
+                        $("#classlist :input").attr("disabled", false);                        
+                    } 
+                    else if (event.type === 'exception')
+                    {
+                        // Report errors with the symbol table request
+                        alert(event.message);
+                        // Re-enable checkboxes
+                        $("#classlist :input").attr("disabled", false);                        
+                    } 
+                    else 
+                    {
+                        // TODO: What are we doing here?                        
+                    }
+                }
+            , { escape:true }
+        );        
+    },
+
+    constructUMLClass : function (classSymbolTable) {
+        return constructUMLClass( classSymbolTable, null );
+    },
+
+    constructUMLClass : function (classSymbolTable, parentClassName) {
+
+        // Construct UML class
+        var className = '';
+        
+        if (parentClassName != undefined)
+        {
+            className += parentClassName + '.';
+        }
+        
+        className += classSymbolTable.name;
+        
+        var apexUMLClass = new UmlCanvas.Class( { name: className } );
+        
+        // Add methods
+        for(var i = 0; i < classSymbolTable.methods.length; i++)
+        {
+            var method = classSymbolTable.methods[i];
+            // Only public methods
+            if(method.visibility!='PUBLIC' && method.visibility!='GLOBAL')
+                continue;
+            // Operation
+            var operation = { 
+                visibility: "public",
+                name: method.name,
+                arguments: [],
+                returnType : method.returnType  };
+            // Parameters?
+            for(var a = 0; a < method.parameters.length; a++)
+                operation.arguments.push({
+                        name : method.parameters[a].name,
+                        type : method.parameters[a].type + ' ' + method.parameters[a].name
+                    });
+            // Add operation
+            apexUMLClass.addOperation( operation );
+        }
+        
+        // Add Attributes 
+        for(var i = 0; i < classSymbolTable.properties.length; i++)
+        {
+            var property = classSymbolTable.properties[i];
+            // Only public methods
+            if(property.visibility!='PUBLIC' && property.visibility!='GLOBAL')
+                continue;
+            // Add attribute
+            apexUMLClass.addAttribute( 
+                { visibility: "public", 
+                  name: property.name, 
+                  type: property.type } );                              
+        }
+        
+        return apexUMLClass
+    }    
+}  
+</script>
+</apex:component>
