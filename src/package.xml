@@ -1,44 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>ApexClassesSelector</members>
-        <members>ToolingAPI</members>
-        <members>ToolingAPIDemo</members>
-        <members>ToolingAPITest</members>
-        <members>UmlController</members>
-        <members>UmlService</members>
-        <members>fflib_SObjectDomain</members>
-        <members>fflib_SObjectDomainTest</members>
-        <members>fflib_SObjectSelector</members>
-        <members>fflib_SObjectSelectorTest</members>
-        <members>fflib_SObjectUnitOfWork</members>
-        <members>fflib_SObjectUnitOfWorkTest</members>
-        <members>fflib_StringBuilder</members>
-        <members>fflib_StringBuilderTest</members>
+        <members>*</members>
         <name>ApexClass</name>
     </types>
     <types>
-        <members>uml</members>
+        <members>*</members>
         <name>ApexComponent</name>
     </types>
     <types>
-        <members>uml</members>
+        <members>*</members>
         <name>ApexPage</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>CustomTab</name>
     </types>
     <types>
         <members>ApexUMLCanvas</members>
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>ApexUMLCanvas</members>
-        <name>CustomTab</name>
+        <members>*</members>
+        <name>PermissionSet</name>
     </types>
     <types>
         <members>Admin</members>
         <name>Profile</name>
     </types>
     <types>
-        <members>apexuml</members>
+        <members>*</members>
         <name>StaticResource</name>
     </types>
     <version>29.0</version>
