@@ -19,7 +19,7 @@ Since Dreamforce 2013, i was contact by [John M. Daniel](https://twitter.com/Joh
 
 Further information and blog posts...
 
-- TBD
+- [Going Native with the Apex UML Tool and Tooling API](http://andyinthecloud.com/2014/03/15/going-native-w…nd-tooling-api)
 
 **NOTE:** If you have installed the earlier version, don't worry, simply take the latest package install link below and it will automatically upgrade you to the native version.
 
