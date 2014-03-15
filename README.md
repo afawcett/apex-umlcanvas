@@ -3,6 +3,15 @@ Apex UML
 
 ![Logo](http://andrewfawcett.files.wordpress.com/2013/10/screen-shot-2013-10-14-at-22-16-58.png)
 
+Contributors
+------------
+
+Currently this tool has the following contributors, please join us!
+
+- [Andrew Fawcett](https://twitter.com/andyinthecloud)
+- [John M. Daniel](https://twitter.com/JohnDTheMaven)
+- [James Loghry](https://twitter.com/dancinllama) (indirectly via [Apex Tooling API](https://github.com/afawcett/apex-toolingapi))
+
 Apex UML (Native version)
 -------------------------
 
