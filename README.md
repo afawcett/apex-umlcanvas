@@ -41,6 +41,7 @@ Known Issues
 ------------
 
 - **Read timeout error.** This error currently seems to appear when the Tooling API has to demand compile code to determine the Symbol Table. We will look into ways to aviod this and/or provide feedback when this is happening. In the meantime please go to the Apex Classes page and click the Compile All Classes link before using the tool.
+- **Canvas App not found error.** This error occurs if you are running v1.2 of the tool, as the Canvas Connected App no longer exists, please upgrade to v1.3 or later.
 
 Get Involved in Enhancing this Tool!
 ====================================
