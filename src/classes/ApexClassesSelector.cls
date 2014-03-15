@@ -29,14 +29,6 @@ public with sharing class ApexClassesSelector extends fflib_SObjectSelector
 	}
 
 	/**
-	 * Query Apex classes by Id
-	 **/
-	public List<ApexClass> selectById(Set<Id> ids)
-	{
-		return (List<ApexClass>) selectSObjectsById(ids);
-	}
-
-	/**
 	 * Query Apex classes by Name
 	 **/
 	public Map<String, ApexClass> selectByName(List<String> names)
