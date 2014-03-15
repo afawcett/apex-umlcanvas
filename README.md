@@ -28,10 +28,17 @@ Apex UML (Canvas version)
 
 This version of the tool is no longer live. If you still want to know more about consuming the API from a Canvas / Java context though you can read more about this tool at my blog post [here](http://andyinthecloud.com/2013/11/12/apex-uml-canvas-tool-dreamforce-release).  You can also watch the **Dreamforce 2013** presentation on how it was built [here](http://www.youtube.com/watch?v=SbWZpw0-Y5k) and download the slides from [here](https://docs.google.com/file/d/0B6brfGow3cD8U1Z2THppTlVTaGs/edit). 
 
-Installing the Tooling
-----------------------
+Installing the Tool
+-------------------
 
-For a full list of steps see blog posts above.
+- Install via the **latest package link below**
+- Ensure your **Apex classes are compiled**
+- Go to **Apex Classes** page and click the **Compile all classes** link
+- Navigate to the **Apex UML** page and select a class
+- You will see a **Remote Site** setting message popup, follow it and then reload the page.
+- Your good to go!
+
+### Package Versions
 
  - v1.3 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000Cf5t)
 
