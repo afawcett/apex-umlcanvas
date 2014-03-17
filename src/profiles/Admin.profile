@@ -22,6 +22,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>UmlControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>UmlService</apexClass>
         <enabled>true</enabled>
     </classAccesses>
