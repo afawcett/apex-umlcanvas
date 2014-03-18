@@ -40,7 +40,9 @@ Installing the Tool
 
 ### Package Versions
 
- - v1.3 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000Cf5t)
+ - v1.4 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000Cq9c) - Fix for issue [4](https://github.com/afawcett/apex-umlcanvas/issues/4)
+
+ - v1.3 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000Cf5t) (depricated)
 
  - v1.2 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000Cf5o) (depricated) 
 
