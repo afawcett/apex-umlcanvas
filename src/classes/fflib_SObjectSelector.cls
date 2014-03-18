@@ -32,7 +32,7 @@ public abstract with sharing class fflib_SObjectSelector
 	/**
 	 * This overrides the Multi Currency handling, preventing it from injecting the CurrencyIsoCode field for certain System objects that don't ever support it
 	 **/
-	private static Set<String> STANDARD_WITHOUT_CURRENCYISO = new Set<String> { 'AsyncApexJob' };
+	private static Set<String> STANDARD_WITHOUT_CURRENCYISO = new Set<String> { 'ApexClass', 'AsyncApexJob' };
 		
 	private fflib_StringBuilder.FieldListBuilder m_fieldListBuilder;
 	
