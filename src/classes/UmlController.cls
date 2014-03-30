@@ -3,7 +3,7 @@ public class UmlController
 	public List<String> getApexClasses()
 	{
 		List<String> classNames = new List<String>();
-		for(ApexClass clasz : new ApexClassesSelector().selectAllDefaultNamespace())
+		for(ApexClass clasz : new ApexClassesSelector().selectAllVisible())
 			classNames.add(clasz.Name);
 		return classNames;
 	}

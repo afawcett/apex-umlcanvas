@@ -43,13 +43,13 @@ public with sharing class ApexClassesSelector extends fflib_SObjectSelector
 	}
 
 	/**
-	 * Returns ApexClass from the default (unmanaged) namespace
+	 * Returns ApexClass's with visible source code
 	 **/	
-	public List<ApexClass> selectAllDefaultNamespace()
+	public List<ApexClass> selectAllVisible()
 	{
 		assertIsAccessible();
 		return Database.query(String.format(
-			'select {0} from {1} where NamespacePrefix = null order by {2}', 
+			'select {0} from {1} where LengthWithoutComments > 0 order by {2}', 
 				new List<String>{getFieldListString(),
 					getSObjectName(),
 					getOrderBy()}));
