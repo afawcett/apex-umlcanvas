@@ -15,7 +15,7 @@ Currently this tool has the following contributors, please join us!
 Apex UML (Native version)
 -------------------------
 
-Since Dreamforce 2013, i was contact by [John M. Daniel](https://twitter.com/JohnDTheMaven), who asked if it was possible to create a version of the tool without using a Heroku applicaiton, by consuming the Tooling API from Apex directly. About the same time [James Loghry](https://twitter.com/dancinllama) and I had also started working on a native [Apex wrapper for the Tooling API](https://github.com/afawcett/apex-toolingapi). And so from this point forward the Apex UML tool is completly native, no Heroku instance is required!
+Since Dreamforce 2013, I was contacted by [John M. Daniel](https://twitter.com/JohnDTheMaven), who asked if it was possible to create a version of the tool without using a Heroku applicaiton, by consuming the Tooling API from Apex directly. About the same time [James Loghry](https://twitter.com/dancinllama) and I had also started working on a native [Apex wrapper for the Tooling API](https://github.com/afawcett/apex-toolingapi). And so from this point forward the Apex UML tool is completly native, no Heroku instance is required!
 
 Further information and blog posts...
 
@@ -39,6 +39,8 @@ Installing the Tool
 - Your good to go!
 
 ### Package Versions
+
+ - [v1.6](https://github.com/afawcett/apex-umlcanvas/issues?milestone=2) Pacakge install - coming soon.
 
  - v1.5 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000CqNM) - Fix for issue [5](https://github.com/afawcett/apex-umlcanvas/issues/5)
  
