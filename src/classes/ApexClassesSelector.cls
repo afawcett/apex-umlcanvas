@@ -48,10 +48,25 @@ public with sharing class ApexClassesSelector extends fflib_SObjectSelector
 	public List<ApexClass> selectAllVisible()
 	{
 		assertIsAccessible();
-		return Database.query(String.format(
-			'select {0} from {1} where LengthWithoutComments > 0 order by {2}', 
-				new List<String>{getFieldListString(),
-					getSObjectName(),
-					getOrderBy()}));
+
+        list<ApexClass> allClasses = (list<ApexClass>) Database.query(String.format(
+												            'select {0} from {1} order by {2}', 
+												                new List<String>{getFieldListString(),
+												                    getSObjectName(),
+												                    getOrderBy()}));
+		
+		list<ApexClass> theClassesThatAreVisible = new list<ApexClass>();
+
+        for (ApexClass aClass : allClasses)
+        {
+        	// if the "LengthWithoutComments" field is -1, then the class is from an 
+        	// installed managed package and not visible in the current namespace
+            if (string.valueOf(aClass.LengthWithoutComments) != '-1')
+		    {
+		        theClassesThatAreVisible.add( aClass );
+		    }
+        }
+		
+		return theClassesThatAreVisible;
 	}	
 }
