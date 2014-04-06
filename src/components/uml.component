@@ -18,6 +18,8 @@ var ApexNavigator = {
     // Diagram
     diagram : null, 
     
+    debug : false,
+    
     load : function() {
         // Initialise UmlCanvas
         var manager = new UmlCanvas.Manager();
@@ -28,6 +30,7 @@ var ApexNavigator = {
     },
     
     select : function(apexClassName) {
+        ApexNavigator.consoleLog('select function started');
         // Apex class being rendered on canvas
         ApexNavigator.asyncClassName = apexClassName;
         // Selected?
@@ -49,6 +52,9 @@ var ApexNavigator = {
                 , ApexNavigator.asyncClassName
                 ,   function(result, event)
                     {
+                        ApexNavigator.consoleLog('RemoteAction.UmlController.compile remoting call callback funtion started');
+                        ApexNavigator.consoleLog('callback function event.type = '+event.type);
+                        ApexNavigator.consoleLog('callback function event.status = '+event.status);
                         if (event.status)
                         {
                             ApexNavigator.asyncResult = result;
@@ -63,9 +69,10 @@ var ApexNavigator = {
                         else if (event.type === 'exception')
                         {
                             // Report errors with the compile request
+                            ApexNavigator.consoleLog('exception message = '+event.message + event.where);
                             alert(event.message + event.where);
                             // Re-enable checkboxes
-                            $("#classlist :input").attr("disabled", false);                            
+                            $("#classlist :input").attr("disabled", false);
                         } 
                         else 
                         {
@@ -82,6 +89,9 @@ var ApexNavigator = {
                 , ApexNavigator.asyncClassName
                 ,   function(result, event)
                     {
+                        ApexNavigator.consoleLog('$RemoteAction.UmlController.symbolTable remoting call callback funtion started');
+                        ApexNavigator.consoleLog('callback function event.type = '+event.type);
+                        ApexNavigator.consoleLog('callback function event.status = '+event.status);
                         if (event.status)
                         {
                             // Place it on the canvas        
@@ -100,6 +110,7 @@ var ApexNavigator = {
                         else if (event.type === 'exception')
                         {
                             // Report errors with the symbol table request
+                            ApexNavigator.consoleLog('exception message = '+event.message);
                             alert(event.message);
                         } 
                         else 
@@ -281,7 +292,15 @@ var ApexNavigator = {
         }
         
         return apexUMLClass
-    }    
+    },
+    
+    consoleLog : function(message) {
+        if (ApexNavigator.debug) {
+            if (typeof console !== 'undefined' && typeof console.log !== 'undefined') {
+                console.log(message);
+            }
+        }
+    }
 }  
 </script>
 </apex:component>
