@@ -1344,7 +1344,22 @@ public with sharing class ToolingAPI {
                 queryReq.setBody(JSON.serialize(data));
             }
         }
-        HttpResponse queryRes = h.send(queryReq);
+        HttpResponse queryRes = null;
+        try
+        {
+            queryRes = h.send(queryReq);
+        }
+        catch (System.CalloutException ce)
+        {
+            if (ce.getMessage().containsIgnoreCase('unauthorized endpoint'))
+            {
+                throw new ToolingAPIException('unauthorized endpoint');
+            }
+            else
+            {
+                throw ce;
+            }
+        }
         Integer successCode = 200;
         if(method.equals('POST'))
             successCode = 201;
