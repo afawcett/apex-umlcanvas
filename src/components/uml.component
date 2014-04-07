@@ -176,6 +176,27 @@ var ApexNavigator = {
     },          
     
     renderRelationships : function() {
+        var makeRelationship = function(fromClass, symbolName, isInterface) {
+            var toClass = ApexNavigator.diagram.getDiagramClass(symbolName);
+            if (toClass == null) return;
+            
+            var association = new UmlCanvas.Realization({
+                from: toClass,
+                to: fromClass,
+                kind: "association",
+                name: toClass.name+'#'+fromClass.name,
+                routing: 'vertical',
+                lineWidth: 2,
+                labelFont: '10pt Arial,Helvetica,sans-serif',
+                navigability: 'destination'
+            });
+            
+            if (isInterface !== true) {
+                association.centerLabel = '<<use>>';
+            }
+            
+            ApexNavigator.diagram.put(association);
+        }
 
         // Retrieve Symbol Table following compilation (includes external references)
         Visualforce.remoting.Manager.invokeAction
@@ -196,24 +217,16 @@ var ApexNavigator = {
                             var fromClass = ApexNavigator.diagram.getDiagramClass(shapeName);
                             if(fromClass instanceof UmlCanvas.Class)
                             {
+                                
+                                for (var i = 0; i < fromClass.symbolTable.interfaces.length; i++) {
+                                    var interfaceName = fromClass.symbolTable.interfaces[i];
+                                    makeRelationship(fromClass, interfaceName, true);
+                                }
+                                
                                 for(var i = 0; i < fromClass.symbolTable.externalReferences.length; i++)
-                                {                 
+                                {             
                                     var externalReference = fromClass.symbolTable.externalReferences[i];
-                                    var toClass = ApexNavigator.diagram.getDiagramClass(externalReference.name);
-                                    if(toClass == null)
-                                        continue;                                                       
-                                    var association = 
-                                        new UmlCanvas.Realization(
-                                            { from: toClass,
-                                              to: fromClass, 
-                                              kind: "association",
-                                              name: toClass.name+'#'+fromClass.name, 
-                                              routing: 'vertical',
-                                              lineWidth: 2,
-                                              labelFont: '10pt Arial,Helvetica,sans-serif',
-                                              navigability: 'destination' } );  
-                                    association.centerLabel = '<<use>>';                                                
-                                    ApexNavigator.diagram.put(association);                         
+                                    makeRelationship(fromClass, externalReference.name);
                                 }
                             }
                         }                       
