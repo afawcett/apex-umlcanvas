@@ -18,7 +18,7 @@ var ApexNavigator = {
     // Diagram
     diagram : null, 
     
-    debug : false,
+    debug : true,
     
     load : function() {
         // Initialise UmlCanvas
@@ -254,6 +254,8 @@ var ApexNavigator = {
     },
 
     constructUMLClass : function (classSymbolTable, parentClassName) {
+    
+        ApexNavigator.consoleLog(classSymbolTable);
 
         // Construct UML class
         var className = '';
@@ -265,7 +267,16 @@ var ApexNavigator = {
         
         className += classSymbolTable.name;
         
-        var apexUMLClass = new UmlCanvas.Class( { name: className } );
+        var apexUMLClass;
+        
+        if (classSymbolTable.isInterface)
+        {
+            apexUMLClass = new UmlCanvas.Interface( { name: className } );
+        }
+        else
+        {
+            apexUMLClass = new UmlCanvas.Class( { name: className } );
+        }
         
         // Add methods
         for(var i = 0; i < classSymbolTable.methods.length; i++)

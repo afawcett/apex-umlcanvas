@@ -1197,6 +1197,7 @@ public with sharing class ToolingAPI {
         public Id                  id;
         public SymbolTable[]       innerClasses;
         public String[]            interfaces;
+        public boolean             isInterface;
         public Method[]            methods;
         public String              name;
         public String              namespace;

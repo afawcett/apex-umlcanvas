@@ -26,17 +26,33 @@
 
 public class UmlService 
 {
+	private static ToolingApi.SymbolTable augumentSymbolTable(ToolingApi.SymbolTable symbolTable)
+	{
+		Map<String, ApexClass> classes = new ApexClassesSelector().selectByName(new List<String> { symbolTable.name }); 
+		
+		list<string> classBodyLines = classes.get( symbolTable.name ).body.split('\n');
+		
+		if ( classBodyLines[symbolTable.tableDeclaration.location.line - 1].containsIgnoreCase(' interface ') )
+		{
+			symbolTable.isInterface = true;
+		}
+
+		return symbolTable;
+	}
+	
 	public static ToolingApi.SymbolTable symbolTable(String className)
 	{
 		ToolingApi toolingAPI = new ToolingApi();
-		List<ToolingAPI.ApexClass> apexClasses = (List<ToolingAPI.ApexClass>) 
+		List<ToolingAPI.ApexClass> classes = (List<ToolingAPI.ApexClass>) 
 			toolingAPI.query(
 				'Select Name, SymbolTable ' + 
 				'From ApexClass ' + 
 				'Where Name = \'' + className + '\'').records;
-		if(apexClasses.size()==0)
+				
+        if (classes.isEmpty())
 			throw new UmlServiceException('Apex Class ' + className + ' not found');
-		return apexClasses[0].symbolTable;
+		
+		return augumentSymbolTable(classes[0].symbolTable);
 	}
 
 	public static ToolingApi.ContainerAsyncRequest compile(String className)
@@ -44,7 +60,7 @@ public class UmlService
 		// Retrieve the ApexClass Body
 		Map<String, ApexClass> classes = 
 			new ApexClassesSelector().selectByName(new List<String> { className });	
-		if(classes.size()==0)
+		if(classes.isEmpty())
 			throw new UmlServiceException('Apex Class ' + className + ' not found');
 
 		// Delete any existing MetadataContainer?
@@ -52,7 +68,8 @@ public class UmlService
 		List<ToolingAPI.MetadataContainer> containers = (List<ToolingAPI.MetadataContainer>)
 			tooling.query(
 				'SELECT Id, Name FROM MetadataContainer WHERE Name = \'ApexNavigator\'').records;
-		if(containers!=null &&  containers.size()>0)
+
+		if ( containers != null &&  ! containers.isEmpty() )
 			tooling.deleteSObject(ToolingAPI.SObjectType.MetadataContainer, containers[0].Id);
 
 		// Create MetadataContainer
@@ -102,15 +119,15 @@ public class UmlService
 	public static ToolingApi.SymbolTable symbolTable(String asyncRequestId, String className)
 	{
 		ToolingApi toolingAPI = new ToolingApi();
-		List<ToolingAPI.ApexClassMember> apexClasses = (List<ToolingAPI.ApexClassMember>) 
+		List<ToolingAPI.ApexClassMember> classes = (List<ToolingAPI.ApexClassMember>) 
 			toolingAPI.query(
 				'SELECT ContentEntityId, ContentEntity.Name, SymbolTable ' + 
 				'FROM ApexClassMember ' + 
 				'WHERE MetadataContainerId = \'' + asyncRequestId + '\' '  + 
 					'AND ContentEntity.Name = \'' + className + '\'').records;
-		if(apexClasses.size()==0)
+		if (classes.isEmpty())
 			throw new UmlServiceException('Apex Class ' + className + ' not found in Metadata Container ' + asyncRequestId);
-		return apexClasses[0].symbolTable;
+		return augumentSymbolTable(classes[0].symbolTable);
 	}
 
 	public class UmlServiceException extends Exception { }
