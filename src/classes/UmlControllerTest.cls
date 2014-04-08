@@ -27,52 +27,276 @@
 @IsTest
 private class UmlControllerTest 
 {
-	private static testmethod void testUmlController()
-	{
-		Test.setMock(HttpCalloutMock.class, 
-			new ToolingAPIMock(
-					new String[] { 
-						testSymbolTableResponse, 
-						testQueryMetadataContainerResponse,
-						testDeleteMetadataContainerResponse,
-						testInsertMetadataContainerResponse,
-						testInsertApexClassMemberResponse,
-						testInsertContainerAsyncResponse,
-						testQueryAsyncContainerResponse1,
-						testQueryAsyncContainerResponse2,
-						testSymbolTableExternalsResponse
-						},
-					new Integer[] { 
-						200, // GET Success
-						200, // GET Success
-						204, // DELETE Success
-						201, // POST Success
-						201, // POST Success
-						201, // POST Success
-						200, // GET Success
-						200, // Get Sucesss
-						200 // Get Success
-						}));
+    private static testmethod void testUmlControllergetApexClassesMethod()
+    {
+    	// List the Apex Classes
+        new UmlController().getApexClasses();
+    }
+    
+    private static testmethod void testUmlControllerSymbolTableMethod()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testSymbolTableResponse 
+                        },
+                    new Integer[] { 
+                        200 // GET Success
+                    }));
 
-		// List the Apex Classes
-		new UmlController().getApexClasses();
-		// User selects a class from the list and renders initial SymbolTable
-		ToolingApi.SymbolTable symbolTable = UmlController.symbolTable('UmlService');
-		System.assertEquals('UmlService', symbolTable.name);
-		System.assertEquals(5, symbolTable.methods.size());
-		System.assertEquals(0, symbolTable.externalReferences.size());
-		// Page starts background compile
-		ToolingApi.ContainerAsyncRequest asyncRequest = UmlController.compile('UmlService');
-		System.assertEquals('Queued', asyncRequest.state);
-		// Page queries background compile
-		asyncRequest = UmlController.containerAsyncRequest(asyncRequest.Id);
-		System.assertEquals('Completed', asyncRequest.state);
-		// Page queries SymbolTable (now with external references populated)
-		symbolTable = UmlController.symbolTableFromCompile(asyncRequest.metadataContainerId, 'UmlService');
-		System.assertEquals('UmlService', symbolTable.name);
-		System.assertEquals(5, symbolTable.methods.size());
-		System.assertEquals(15, symbolTable.externalReferences.size());
-	}
+        // User selects a class from the list and renders initial SymbolTable
+        ToolingApi.SymbolTable symbolTable = UmlController.symbolTable('UmlService');
+        System.assertEquals('UmlService', symbolTable.name);
+        System.assertEquals(5, symbolTable.methods.size());
+        System.assertEquals(0, symbolTable.externalReferences.size());
+    }
+
+    private static testmethod void testUmlControllerSymbolTableMethodClassDoesNotExist()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testSymbolTableClassNotFoundResponse 
+                        },
+                    new Integer[] { 
+                        200 // GET Success
+                    }));
+
+        // Look for a class that does not exist
+        string classNameThatDoesNotExist = 'foo_bar';
+        try
+        {
+            ToolingApi.SymbolTable symbolTableDNE = UmlController.symbolTable(classNameThatDoesNotExist);
+            System.assert(false,'UmlController.symbolTable(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+            system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            System.assert(false,'UmlController.symbolTable(\'foo_bar\') produced exception of '+e);
+        }
+    }
+
+    private static testmethod void testUmlControllerSymbolTableMethodWithAsyncRequestIdClassDoesNotExist()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testSymbolTableClassNotFoundResponse 
+                        },
+                    new Integer[] { 
+                        200 // GET Success
+                    }));
+
+        // Look for a class that does not exist
+        string classNameThatDoesNotExist = 'foo_bar';
+        try
+        {
+            ToolingApi.SymbolTable symbolTableDNE = UmlController.symbolTableFromCompile('fakeAsyncRequestId', classNameThatDoesNotExist);
+            System.assert(false,'UmlController.symbolTable(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+        	system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            system.debug('exception seen is === '+e);
+            system.debug('\n\n'+e.getStackTraceString()+'\n\n');
+            System.assert(false,'UmlController.symbolTable(\'foo_bar\') produced exception of '+e);
+        }
+    }
+
+    private static testmethod void testUmlControllerCompileMethod()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testQueryMetadataContainerResponse,
+                        testDeleteMetadataContainerResponse,
+                        testInsertMetadataContainerResponse,
+                        testInsertApexClassMemberResponse,
+                        testInsertContainerAsyncResponse,
+                        testQueryAsyncContainerResponse1,
+                        testQueryAsyncContainerResponse2,
+                        testSymbolTableExternalsResponse
+                        },
+                    new Integer[] { 
+                        200, // GET Success
+                        204, // DELETE Success
+                        201, // POST Success
+                        201, // POST Success
+                        201, // POST Success
+                        200, // GET Success
+                        200, // GET Success
+                        200  // GET Success
+                    }));
+
+        // Page starts background compile
+        ToolingApi.ContainerAsyncRequest asyncRequest = UmlController.compile('UmlService');
+        System.assertEquals('Queued', asyncRequest.state);
+        
+        // Page queries background compile
+        asyncRequest = UmlController.containerAsyncRequest(asyncRequest.Id);
+        System.assertEquals('Completed', asyncRequest.state);
+        
+        // Page queries SymbolTable (now with external references populated)
+        ToolingApi.SymbolTable symbolTable = UmlController.symbolTableFromCompile(asyncRequest.metadataContainerId, 'UmlService');
+        System.assertEquals('UmlService', symbolTable.name);
+        System.assertEquals(5, symbolTable.methods.size());
+        System.assertEquals(15, symbolTable.externalReferences.size());
+
+    }
+
+    private static testmethod void testUmlControllerCompileMethodClassDoesNotExist()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testSymbolTableClassNotFoundResponse
+                        },
+                    new Integer[] { 
+                        200 // GET Success
+                    }));
+
+        string classNameThatDoesNotExist = 'foo_bar';
+
+        // Page starts background compile on a class that does not exist
+        try
+        {
+            ToolingApi.ContainerAsyncRequest asyncRequestDNE = UmlController.compile(classNameThatDoesNotExist);
+            System.assert(false,'UmlController.compile(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+            system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            system.debug('exception seen is === '+e);
+            system.debug('\n\n'+e.getStackTraceString()+'\n\n');
+            System.assert(false,'UmlController.compile(\'foo_bar\') produced exception of '+e);
+        }
+    }
+
+    private static testmethod void testUmlControllerCompileMethodClassCreateFails()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testQueryMetadataContainerResponse,
+                        testDeleteMetadataContainerResponse,
+                        testInsertMetadataContainerFailedResponse
+                        },
+                    new Integer[] { 
+                        200, // GET Success
+                        204, // DELETE Success
+                        201 // POST Success
+                    }));
+
+        string classNameThatDoesNotExist = 'foo_bar';
+
+        // Page starts background compile
+        try
+        {
+            ToolingApi.ContainerAsyncRequest asyncRequest = UmlController.compile('UmlService');
+            System.assert(false,'UmlController.compile(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+            system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            system.debug('exception seen is === '+e);
+            system.debug('\n\n'+e.getStackTraceString()+'\n\n');
+            System.assert(false,'UmlController.compile(\'foo_bar\') produced exception of '+e);
+        }
+    }
+
+    private static testmethod void testUmlControllerCompileMethod2ndClassCreateFails()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testQueryMetadataContainerResponse,
+                        testDeleteMetadataContainerResponse,
+                        testInsertMetadataContainerResponse,
+                        testInsertApexClassMemberFailedResponse
+                        },
+                    new Integer[] { 
+                        200, // GET Success
+                        204, // DELETE Success
+                        201, // POST Success
+                        201 // POST Success
+                    }));
+
+        string classNameThatDoesNotExist = 'foo_bar';
+
+        // Page starts background compile
+        try
+        {
+            ToolingApi.ContainerAsyncRequest asyncRequest = UmlController.compile('UmlService');
+            System.assert(false,'UmlController.compile(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+            system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            system.debug('exception seen is === '+e);
+            system.debug('\n\n'+e.getStackTraceString()+'\n\n');
+            System.assert(false,'UmlController.compile(\'foo_bar\') produced exception of '+e);
+        }
+    }
+
+    private static testmethod void testUmlControllerCompileMethod3rdClassCreateFails()
+    {
+        Test.setMock(HttpCalloutMock.class, 
+            new ToolingAPIMock(
+                    new String[] { 
+                        testQueryMetadataContainerResponse,
+                        testDeleteMetadataContainerResponse,
+                        testInsertMetadataContainerResponse,
+                        testInsertApexClassMemberResponse,
+                        testInsertContainerAsyncFailedResponse
+                        },
+                    new Integer[] { 
+                        200, // GET Success
+                        204, // DELETE Success
+                        201, // POST Success
+                        201, // POST Success
+                        201 // POST Success
+                    }));
+
+        string classNameThatDoesNotExist = 'foo_bar';
+
+        // Page starts background compile
+        try
+        {
+            ToolingApi.ContainerAsyncRequest asyncRequest = UmlController.compile('UmlService');
+            System.assert(false,'UmlController.compile(\''+classNameThatDoesNotExist+'\') did not produce expected UmlService.UmlServiceException');
+        }
+        catch (UmlService.UmlServiceException use)
+        {
+            system.debug('\n\n'+use.getStackTraceString()+'\n\n');
+            System.assert(true);
+        }
+        catch (Exception e)
+        {
+            system.debug('exception seen is === '+e);
+            system.debug('\n\n'+e.getStackTraceString()+'\n\n');
+            System.assert(false,'UmlController.compile(\'foo_bar\') produced exception of '+e);
+        }
+    }
 
 	public class ToolingAPIMock implements HttpCalloutMock 
 	{
@@ -98,10 +322,14 @@ private class UmlControllerTest
 		}
 	}
 
-	// System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/query/?q=Select+Name%2C+SymbolTable+From+ApexClass+Where+Name+%3D+%27UmlService%27, Method=GET]
-	private static final String testSymbolTableResponse = 
-		'{"size":1,"totalSize":1,"done":true,"entityTypeName":"ApexClass","records":[{"attributes":{"type":"ApexClass","url":"/services/data/v29.0/tooling/sobjects/ApexClass/01pi00000057VInAAM"},"Name":"UmlService","SymbolTable":{"name":"UmlService","constructors":[],"interfaces":[],"key":"01pi00000057VIn","methods":[{"returnType":"SymbolTable","parameters":[{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"symbolTable","location":{"column":39,"line":29},"type":null,"references":[]},{"returnType":"ContainerAsyncRequest","parameters":[{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"compile","location":{"column":49,"line":42},"type":null,"references":[]},{"returnType":"ContainerAsyncRequest","parameters":[{"name":"asyncRequestId","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"containerAsyncRequest","location":{"column":49,"line":90},"type":null,"references":[]},{"returnType":"SymbolTable","parameters":[{"name":"asyncRequestId","type":"String"},{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"symbolTable","location":{"column":39,"line":102},"type":null,"references":[]},{"returnType":"UmlServiceException","parameters":[{"name":"saveResult","type":"SaveResult"}],"visibility":"PRIVATE","modifiers":["STATIC"],"name":"makeException","location":{"column":37,"line":121},"type":null,"references":[]}],"properties":[],"id":"01pi00000057VIn","namespace":null,"innerClasses":[{"name":"UmlServiceException","constructors":[],"interfaces":[],"key":null,"methods":[],"properties":[],"id":null,"namespace":null,"innerClasses":[],"variables":[],"externalReferences":[],"tableDeclaration":{"modifiers":[],"name":"UmlServiceException","location":{"column":15,"line":116},"type":"UmlServiceException","references":[]}}],"variables":[{"modifiers":[],"name":"className","location":{"column":58,"line":29},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":31},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"apexClasses","location":{"column":30,"line":32},"type":"LIST","references":[]},{"modifiers":[],"name":"className","location":{"column":64,"line":42},"type":"String","references":[]},{"modifiers":[],"name":"classes","location":{"column":26,"line":45},"type":"Map","references":[]},{"modifiers":[],"name":"tooling","location":{"column":14,"line":51},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"containers","location":{"column":38,"line":52},"type":"LIST","references":[]},{"modifiers":[],"name":"container","location":{"column":32,"line":59},"type":"MetadataContainer","references":[]},{"modifiers":[],"name":"containerSaveResult","location":{"column":25,"line":61},"type":"SaveResult","references":[]},{"modifiers":[],"name":"containerId","location":{"column":6,"line":64},"type":"Id","references":[]},{"modifiers":[],"name":"apexClassMember","location":{"column":30,"line":67},"type":"ApexClassMember","references":[]},{"modifiers":[],"name":"apexClassMemberSaveResult","location":{"column":25,"line":71},"type":"SaveResult","references":[]},{"modifiers":[],"name":"asyncRequest","location":{"column":36,"line":76},"type":"ContainerAsyncRequest","references":[]},{"modifiers":[],"name":"asyncRequestSaveResult","location":{"column":25,"line":79},"type":"SaveResult","references":[]},{"modifiers":[],"name":"asyncRequestId","location":{"column":78,"line":90},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":93},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"asyncRequest","location":{"column":36,"line":94},"type":"ContainerAsyncRequest","references":[]},{"modifiers":[],"name":"asyncRequestId","location":{"column":58,"line":102},"type":"String","references":[]},{"modifiers":[],"name":"className","location":{"column":81,"line":102},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":104},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"apexClasses","location":{"column":36,"line":105},"type":"LIST","references":[]},{"modifiers":[],"name":"saveResult","location":{"column":73,"line":121},"type":"SaveResult","references":[]},{"modifiers":[],"name":"message","location":{"column":10,"line":123},"type":"String","references":[]},{"modifiers":[],"name":"error","location":{"column":24,"line":124},"type":"Error","references":[]}],"externalReferences":[],"tableDeclaration":{"modifiers":[],"name":"UmlService","location":{"column":14,"line":27},"type":"UmlService","references":[]}}}],"queryLocator":null}';
-	
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/query/?q=Select+Name%2C+SymbolTable+From+ApexClass+Where+Name+%3D+%27UmlService%27, Method=GET]
+    private static final String testSymbolTableResponse = 
+        '{"size":1,"totalSize":1,"done":true,"entityTypeName":"ApexClass","records":[{"attributes":{"type":"ApexClass","url":"/services/data/v29.0/tooling/sobjects/ApexClass/01pi00000057VInAAM"},"Name":"UmlService","SymbolTable":{"name":"UmlService","constructors":[],"interfaces":[],"key":"01pi00000057VIn","methods":[{"returnType":"SymbolTable","parameters":[{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"symbolTable","location":{"column":39,"line":29},"type":null,"references":[]},{"returnType":"ContainerAsyncRequest","parameters":[{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"compile","location":{"column":49,"line":42},"type":null,"references":[]},{"returnType":"ContainerAsyncRequest","parameters":[{"name":"asyncRequestId","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"containerAsyncRequest","location":{"column":49,"line":90},"type":null,"references":[]},{"returnType":"SymbolTable","parameters":[{"name":"asyncRequestId","type":"String"},{"name":"className","type":"String"}],"visibility":"PUBLIC","modifiers":["STATIC"],"name":"symbolTable","location":{"column":39,"line":102},"type":null,"references":[]},{"returnType":"UmlServiceException","parameters":[{"name":"saveResult","type":"SaveResult"}],"visibility":"PRIVATE","modifiers":["STATIC"],"name":"makeException","location":{"column":37,"line":121},"type":null,"references":[]}],"properties":[],"id":"01pi00000057VIn","namespace":null,"innerClasses":[{"name":"UmlServiceException","constructors":[],"interfaces":[],"key":null,"methods":[],"properties":[],"id":null,"namespace":null,"innerClasses":[],"variables":[],"externalReferences":[],"tableDeclaration":{"modifiers":[],"name":"UmlServiceException","location":{"column":15,"line":116},"type":"UmlServiceException","references":[]}}],"variables":[{"modifiers":[],"name":"className","location":{"column":58,"line":29},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":31},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"apexClasses","location":{"column":30,"line":32},"type":"LIST","references":[]},{"modifiers":[],"name":"className","location":{"column":64,"line":42},"type":"String","references":[]},{"modifiers":[],"name":"classes","location":{"column":26,"line":45},"type":"Map","references":[]},{"modifiers":[],"name":"tooling","location":{"column":14,"line":51},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"containers","location":{"column":38,"line":52},"type":"LIST","references":[]},{"modifiers":[],"name":"container","location":{"column":32,"line":59},"type":"MetadataContainer","references":[]},{"modifiers":[],"name":"containerSaveResult","location":{"column":25,"line":61},"type":"SaveResult","references":[]},{"modifiers":[],"name":"containerId","location":{"column":6,"line":64},"type":"Id","references":[]},{"modifiers":[],"name":"apexClassMember","location":{"column":30,"line":67},"type":"ApexClassMember","references":[]},{"modifiers":[],"name":"apexClassMemberSaveResult","location":{"column":25,"line":71},"type":"SaveResult","references":[]},{"modifiers":[],"name":"asyncRequest","location":{"column":36,"line":76},"type":"ContainerAsyncRequest","references":[]},{"modifiers":[],"name":"asyncRequestSaveResult","location":{"column":25,"line":79},"type":"SaveResult","references":[]},{"modifiers":[],"name":"asyncRequestId","location":{"column":78,"line":90},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":93},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"asyncRequest","location":{"column":36,"line":94},"type":"ContainerAsyncRequest","references":[]},{"modifiers":[],"name":"asyncRequestId","location":{"column":58,"line":102},"type":"String","references":[]},{"modifiers":[],"name":"className","location":{"column":81,"line":102},"type":"String","references":[]},{"modifiers":[],"name":"toolingAPI","location":{"column":14,"line":104},"type":"ToolingAPI","references":[]},{"modifiers":[],"name":"apexClasses","location":{"column":36,"line":105},"type":"LIST","references":[]},{"modifiers":[],"name":"saveResult","location":{"column":73,"line":121},"type":"SaveResult","references":[]},{"modifiers":[],"name":"message","location":{"column":10,"line":123},"type":"String","references":[]},{"modifiers":[],"name":"error","location":{"column":24,"line":124},"type":"Error","references":[]}],"externalReferences":[],"tableDeclaration":{"modifiers":[],"name":"UmlService","location":{"column":14,"line":27},"type":"UmlService","references":[]}}}],"queryLocator":null}';
+    
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/query/?q=Select+Name%2C+SymbolTable+From+ApexClass+Where+Name+%3D+%27foo_bar%27, Method=GET]
+    private static final String testSymbolTableClassNotFoundResponse = 
+        '{"size":0,"totalSize":0,"done":true,"records":[],"queryLocator":null,"entityTypeName":null}';
+    
 	// System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/query/?q=SELECT+Id%2C+Name+FROM+MetadataContainer+WHERE+Name+%3D+%27ApexNavigator%27, Method=GET]
 	private static final String testQueryMetadataContainerResponse = 
 		'{"size":1,"totalSize":1,"done":true,"entityTypeName":"MetadataContainer","records":[{"attributes":{"type":"MetadataContainer","url":"/services/data/v29.0/tooling/sobjects/MetadataContainer/1dci00000002LbxAAE"},"Id":"1dci00000002LbxAAE","Name":"ApexNavigator"}],"queryLocator":null}';	
@@ -114,13 +342,25 @@ private class UmlControllerTest
 	private static final String testInsertMetadataContainerResponse = 
 		'{"id":"1dci00000002LbxAAE","success":true,"errors":[]}';
 
-	// System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/ApexClassMember, Method=POST]
-	private static final String testInsertApexClassMemberResponse = 
-		'{"id":"400i00000006KdUAAU","success":true,"errors":[]}';
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/MetadataContainer, Method=POST]
+    private static final String testInsertMetadataContainerFailedResponse = 
+        '{"success":false,"id":null,"errors":[{"statusCode":"401","message":"SOMETHING TERRIBLE HAS HAPPENED","fields":["field1"]}]}';
+
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/ApexClassMember, Method=POST]
+    private static final String testInsertApexClassMemberResponse = 
+        '{"id":"400i00000006KdUAAU","success":true,"errors":[]}';
+
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/ApexClassMember, Method=POST]
+    private static final String testInsertApexClassMemberFailedResponse = 
+        '{"success":false,"id":null,"errors":[{"statusCode":"401","message":"SOMETHING TERRIBLE HAS HAPPENED","fields":["field1"]}]}';
 
 	// System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/ContainerAsyncRequest, Method=POST]
 	private static final String testInsertContainerAsyncResponse = 
 		'{"id":"1dri0000000dm94AAA","success":true,"errors":[]}';
+
+    // System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/sobjects/ContainerAsyncRequest, Method=POST]
+    private static final String testInsertContainerAsyncFailedResponse = 
+        '{"success":false,"id":null,"errors":[{"statusCode":"401","message":"SOMETHING TERRIBLE HAS HAPPENED","fields":["field1"]}]}';
 
 	// System.HttpRequest[Endpoint=https://na15.salesforce.com/services/data/v29.0/tooling/query/?q=SELECT+Id%2C+State%2C+MetadataContainerId%2C+CompilerErrors+FROM+ContainerAsyncRequest+WHERE+Id+%3D+%271dri0000000dm94AAA%27, Method=GET] 
 	private static final String testQueryAsyncContainerResponse1 = 

@@ -43,13 +43,14 @@ public class UmlService
 	public static ToolingApi.SymbolTable symbolTable(String className)
 	{
 		ToolingApi toolingAPI = new ToolingApi();
+		
 		List<ToolingAPI.ApexClass> classes = (List<ToolingAPI.ApexClass>) 
 			toolingAPI.query(
 				'Select Name, SymbolTable ' + 
 				'From ApexClass ' + 
 				'Where Name = \'' + className + '\'').records;
-				
-        if (classes.isEmpty())
+
+        if (classes == null || classes.isEmpty())
 			throw new UmlServiceException('Apex Class ' + className + ' not found');
 		
 		return augumentSymbolTable(classes[0].symbolTable);
@@ -76,8 +77,12 @@ public class UmlService
 		ToolingAPI.MetadataContainer container = new ToolingAPI.MetadataContainer();
 		container.name = 'ApexNavigator';
 		ToolingAPI.SaveResult containerSaveResult = tooling.createSObject(container);
-		if(!containerSaveResult.success)
+		
+		system.debug( 'containerSaveResult == '+containerSaveResult );
+		
+		if ( ! containerSaveResult.success )
 			throw makeException(containerSaveResult);
+		
 		Id containerId = containerSaveResult.id;
 
 		// Create ApexClassMember and associate them with the MetadataContainer
@@ -95,7 +100,7 @@ public class UmlService
 		asyncRequest.IsCheckOnly = true;
 		ToolingAPI.SaveResult asyncRequestSaveResult = tooling.createSObject(asyncRequest);		
 		if(!asyncRequestSaveResult.success)
-			throw makeException(asyncRequestSaveResult);		
+			throw makeException(asyncRequestSaveResult);
 		asyncRequest = ((List<ToolingAPI.ContainerAsyncRequest>)
 			tooling.query(
 				'SELECT Id, State, MetadataContainerId, CompilerErrors ' + 
@@ -125,7 +130,7 @@ public class UmlService
 				'FROM ApexClassMember ' + 
 				'WHERE MetadataContainerId = \'' + asyncRequestId + '\' '  + 
 					'AND ContentEntity.Name = \'' + className + '\'').records;
-		if (classes.isEmpty())
+		if (classes == null || classes.isEmpty())
 			throw new UmlServiceException('Apex Class ' + className + ' not found in Metadata Container ' + asyncRequestId);
 		return augumentSymbolTable(classes[0].symbolTable);
 	}
