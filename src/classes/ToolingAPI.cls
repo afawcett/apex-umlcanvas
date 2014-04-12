@@ -1546,6 +1546,8 @@ public with sharing class ToolingAPI {
     }
     /*
      * Helper method for submitting the REST request using the given method.
+     *
+     * @throws ToolingAPIAuthorizationException if the remote site is not authorized.
      */
     private HttpResponse submitRestCall(String relativeUrl, String method){
         return submitRestCall(relativeUrl, method, null);
@@ -1553,6 +1555,8 @@ public with sharing class ToolingAPI {
 
     /*
      * Helper method for submitting the REST request using the given method and data.
+     *
+     * @throws ToolingAPIAuthorizationException if the remote site is not authorized.
      */
     private HttpResponse submitRestCall(String relativeUrl, String method, Object data){
         Http h = new Http();
