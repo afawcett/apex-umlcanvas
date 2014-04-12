@@ -1,4 +1,4 @@
-<apex:page controller="UmlController" showHeader="true" sidebar="false">
+<apex:page controller="UmlController" showHeader="true" sidebar="false" title="ApexUML">
 <head>
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/jquery-1.11.0.min.js')}"/>
     <apex:includeScript value="{! urlfor($Resource.apexuml, '/scripts/jquery-ui-1.10.4.custom.min.js')}"/>
