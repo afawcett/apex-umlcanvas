@@ -37,11 +37,14 @@ var ApexNavigator = {
         var selectedCheckbox = $('#'+ApexNavigator.asyncClassName);
         var selected = selectedCheckbox.prop('checked');
         // Retrieve symbol table for selected class and add to canvas
-        if(selected)
+        if (selected)
         {       
             // Already have it?
-            if(ApexNavigator.diagram.getDiagramClass(ApexNavigator.asyncClassName)!=null)
-                return; 
+            if ( ApexNavigator.diagram.shapesMap.hasOwnProperty( ApexNavigator.asyncClassName ) ) {
+                // do nothing
+                return;
+            }
+
             // Disable checkboxes
             $("#classlist :input").attr("disabled", true);
             
@@ -58,6 +61,7 @@ var ApexNavigator = {
                         if (event.status)
                         {
                             ApexNavigator.asyncResult = result;
+                            ApexNavigator.consoleLog('callback function ApexNavigator.asyncResult.state = '+ApexNavigator.asyncResult.state);
                             if(ApexNavigator.asyncResult.state == 'Completed')
                                 ApexNavigator.updateRelationships();
                             else if(ApexNavigator.asyncResult.state == 'Queued')
