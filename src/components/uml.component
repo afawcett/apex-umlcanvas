@@ -127,9 +127,7 @@ var ApexNavigator = {
         }
         else
         {
-            // Inform the user the its not presently possible to remove items from the canvas and reselect the checkbox
-            alert('Currently it is not possible to remove items from the canvas.')
-            selectedCheckbox.attr('checked', 'true');           
+            ApexNavigator.removeUMLClass(apexClassName);
         }                           
     },
     
@@ -178,6 +176,41 @@ var ApexNavigator = {
             , { escape:true }
         );
     },          
+    
+    removeUMLClass : function (apexClassName) {
+        
+        var apexClass = ApexNavigator.diagram.getDiagramClass( apexClassName );
+        
+        var positionsIndex = -1;
+        var selectedShapesIndex = -1;
+        
+        for (var i = 0; i < ApexNavigator.diagram.positions.length; i++) {
+            if ( apexClass === ApexNavigator.diagram.positions[i].shape ) {
+                // positionsIndex = i;
+                ApexNavigator.diagram.positions.splice(i, 1);
+                break;
+            }
+        }
+        
+        for (var i = 0; i < ApexNavigator.diagram.selectedShapes.length; i++) {
+            if ( apexClass === ApexNavigator.diagram.selectedShapes[i].shape ) {
+                // selectedShapesIndex = i;
+                ApexNavigator.diagram.selectedShapes.splice(i, 1);
+                break;
+            }
+        }
+        
+        
+        //ApexNavigator.consoleLog( 'positionsIndex == '+positionsIndex );
+        //ApexNavigator.consoleLog( 'selectedShapesIndex == '+selectedShapesIndex );
+        // 
+        delete ApexNavigator.diagram.positionsMap[apexClassName];
+        
+        delete ApexNavigator.diagram.shapesMap[apexClassName];
+        
+        ApexNavigator.diagram.fireEvent( "change" );
+        
+    },
     
     renderRelationships : function() {
         var makeRelationship = function(fromClass, symbolName, isInterface) {
