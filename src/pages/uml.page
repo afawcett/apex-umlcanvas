@@ -37,7 +37,14 @@
 
 	<script>				
 		// Start compiling the classes on page load
-		$(document).ready(function() { ApexNavigator.load(); });		
+		$(document).ready(function() { 
+            ApexNavigator.load();
+            
+            $(jQuery.parseJSON( '{! ApexClassesJSONEncoded }' )).each(function (index) {
+                $(classlist).append('<li><input id="'+this+'" type="checkbox" onclick="ApexNavigator.select(\''+this+'\');"/><label for="'+this+'">'+this+'</label></li>');
+            });
+        });
+		
 	</script>
 	<style>
 		ul {
@@ -58,9 +65,6 @@
 			<td valign="top" style="white-space:nowrap; border-right:1px solid lightgrey">
 				<div style="overflow:scroll; height:2000px">
 					<ul id="classlist">
-						<apex:repeat value="{!ApexClasses}" var="className">
-							<li><input id="{!className}" type="checkbox" onclick="ApexNavigator.select('{!className}');"/><label for="{!className}">{!className}</label></li>
-						</apex:repeat>
 					</ul>
 				</div>
 			</td>

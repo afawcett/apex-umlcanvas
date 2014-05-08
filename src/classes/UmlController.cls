@@ -1,11 +1,21 @@
 public class UmlController 
 {
-	public List<String> getApexClasses()
+	public string apexClassesJSONEncoded
 	{
-		List<String> classNames = new List<String>();
-		for(ApexClass clasz : new ApexClassesSelector().selectAllVisible())
-			classNames.add(clasz.Name);
-		return classNames;
+		get
+		{
+			if (string.isBlank(apexClassesJSONEncoded))
+			{
+				list<string> classNames = new list<string>();
+                for(ApexClass clasz : new ApexClassesSelector().selectAllVisible())
+                {
+                    classNames.add(clasz.Name);
+                }
+                apexClassesJSONEncoded = JSON.serialize(classNames);
+			}
+            return apexClassesJSONEncoded;
+		}
+		private set;
 	}
 	
 	@RemoteAction
