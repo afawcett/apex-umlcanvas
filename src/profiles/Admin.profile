@@ -61,6 +61,7 @@
         <apexClass>fflib_StringBuilderTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <custom>false</custom>
     <pageAccesses>
         <apexPage>uml</apexPage>
         <enabled>true</enabled>
