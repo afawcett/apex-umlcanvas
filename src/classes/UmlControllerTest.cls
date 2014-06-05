@@ -27,6 +27,11 @@
 @IsTest
 private class UmlControllerTest 
 {
+	private static testmethod void testUmlControllerApexClassesJSONEncoded()
+	{
+		system.debug( new UmlController().apexClassesJSONEncoded );
+	}
+	
     private static testmethod void testUmlControllerSymbolTableMethod()
     {
         Test.setMock(HttpCalloutMock.class, 
