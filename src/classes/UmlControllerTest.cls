@@ -27,12 +27,6 @@
 @IsTest
 private class UmlControllerTest 
 {
-    private static testmethod void testUmlControllergetApexClassesMethod()
-    {
-    	// List the Apex Classes
-        new UmlController().getApexClasses();
-    }
-    
     private static testmethod void testUmlControllerSymbolTableMethod()
     {
         Test.setMock(HttpCalloutMock.class, 
