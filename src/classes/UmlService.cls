@@ -28,18 +28,30 @@ public class UmlService
 {
 	private static ToolingApi.SymbolTable augumentSymbolTable(ToolingApi.SymbolTable symbolTable)
 	{
-		Map<String, ApexClass> classes = new ApexClassesSelector().selectByName(new List<String> { symbolTable.name }); 
-		
-		list<string> classBodyLines = classes.get( symbolTable.name ).body.split('\n');
-		
-		if ( classBodyLines[symbolTable.tableDeclaration.location.line - 1].containsIgnoreCase(' interface ') )
+		if (symbolTable != null)
 		{
-			symbolTable.isInterface = true;
+            Map<String, ApexClass> classes = new ApexClassesSelector().selectByName(new List<String> { symbolTable.name }); 
+            
+            list<string> classBodyLines = classes.get( symbolTable.name ).body.split('\n');
+            
+            if ( classBodyLines[symbolTable.tableDeclaration.location.line - 1].containsIgnoreCase(' interface ') )
+            {
+                symbolTable.isInterface = true;
+            }
 		}
 
 		return symbolTable;
 	}
 	
+    private static List<ToolingAPI.ApexClass> executeCalloutQueryForApexClass(final string className)
+    {
+        return (List<ToolingAPI.ApexClass>) 
+                new ToolingApi().query(
+                    'Select Name, SymbolTable ' + 
+                    'From ApexClass ' + 
+                   'Where Name = \'' + className + '\'').records;
+    }
+
     /**
      * Helper to turn a bad SaveResult into an exception
      **/
@@ -168,20 +180,26 @@ public class UmlService
 
     public static ToolingApi.SymbolTable symbolTable(String className)
     {
-        ToolingApi toolingAPI = new ToolingApi();
         List<ToolingAPI.ApexClass> classes = new List<ToolingAPI.ApexClass>();
         
         try
         {
-            classes = (List<ToolingAPI.ApexClass>) 
-                toolingAPI.query(
-                    'Select Name, SymbolTable ' + 
-                    'From ApexClass ' + 
-                   'Where Name = \'' + className + '\'').records;
+            classes = executeCalloutQueryForApexClass(className);
         }
         catch (ToolingApi.ToolingAPIAuthorizationException tapiae)
         {
             throw makeException(tapiae);
+        }
+        catch (System.CalloutException ce)
+        {
+        	system.debug('ce == '+ce.getStackTraceString());
+        	if ('Read timed out'.equalsIgnoreCase(ce.getMessage()))
+        	{
+        		// try one more time
+        		// This time if there is an exception thrown, just let it go up 
+        		// the call stack
+        		classes = executeCalloutQueryForApexClass(className);
+        	}
         }
 
         if (classes == null || classes.isEmpty())
