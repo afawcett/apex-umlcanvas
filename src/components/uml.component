@@ -96,6 +96,7 @@ var ApexNavigator = {
                         ApexNavigator.consoleLog('$RemoteAction.UmlController.symbolTable remoting call callback funtion started');
                         ApexNavigator.consoleLog('callback function event.type = '+event.type);
                         ApexNavigator.consoleLog('callback function event.status = '+event.status);
+                        ApexNavigator.consoleLog('callback function result = '+result);
                         if (event.status)
                         {
                             // Place it on the canvas        
@@ -254,16 +255,21 @@ var ApexNavigator = {
                             var fromClass = ApexNavigator.diagram.getDiagramClass(shapeName);
                             if(fromClass instanceof UmlCanvas.Class)
                             {
-                                
-                                for (var i = 0; i < fromClass.symbolTable.interfaces.length; i++) {
-                                    var interfaceName = fromClass.symbolTable.interfaces[i];
-                                    makeRelationship(fromClass, interfaceName, true);
+                                if (fromClass.symbolTable.interfaces != undefined)
+                                {
+                                    for (var i = 0; i < fromClass.symbolTable.interfaces.length; i++) {
+                                        var interfaceName = fromClass.symbolTable.interfaces[i];
+                                        makeRelationship(fromClass, interfaceName, true);
+                                    }
                                 }
                                 
-                                for(var i = 0; i < fromClass.symbolTable.externalReferences.length; i++)
-                                {             
-                                    var externalReference = fromClass.symbolTable.externalReferences[i];
-                                    makeRelationship(fromClass, externalReference.name);
+                                if (fromClass.symbolTable.externalReferences != undefined)
+                                {
+                                    for(var i = 0; i < fromClass.symbolTable.externalReferences.length; i++)
+                                    {             
+                                        var externalReference = fromClass.symbolTable.externalReferences[i];
+                                        makeRelationship(fromClass, externalReference.name);
+                                    }
                                 }
                             }
                         }                       
