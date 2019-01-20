@@ -63,7 +63,7 @@ var ApexNavigator = {
                             ApexNavigator.asyncResult = result;
                             ApexNavigator.consoleLog('callback function ApexNavigator.asyncResult.state = '+ApexNavigator.asyncResult.state);
                             if(ApexNavigator.asyncResult.state == 'Completed')
-                                ApexNavigator.updateRelationships();
+                                ApexNavigator.renderRelationships();
                             else if(ApexNavigator.asyncResult.state == 'Queued')
                                 ApexNavigator.intervalId = 
                                     window.setInterval(ApexNavigator.checkAsync, 2000);
@@ -248,6 +248,10 @@ var ApexNavigator = {
                     {
                         // Store this SymbolTable against the class
                         var umlClass = ApexNavigator.diagram.getDiagramClass(ApexNavigator.asyncClassName);
+                        if(umlClass == null) {
+                            umlClass = ApexNavigator.constructUMLClass(result);
+                            ApexNavigator.diagram.at(50,50).put(umlClass);
+                        }
                         umlClass.symbolTable = result;
                         // Iterate over the classes in the canvas and render any dependency relationships
                         for(var shapeName in ApexNavigator.diagram.shapesMap)

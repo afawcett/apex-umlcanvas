@@ -1,14 +1,3 @@
-*.sublime-build
-*.sublime-workspace
 .DS_Store
-.project
-.settings/
-.sublime-project
-.tm_properties
-Referenced Packages/
-build.properties
-buildx.xml
-config/
-salesforce.schema
-target/
-temp/
+.sfdx
+.vscode

@@ -1377,7 +1377,7 @@ public with sharing class ToolingAPI {
     public class SymbolTable {
         public Symbol[]            constructors;
         public ExternalReference[] externalReferences;
-        public Id                  id;
+        public String              id;
         public SymbolTable[]       innerClasses;
         public String[]            interfaces;
         public boolean             isInterface;
@@ -1561,7 +1561,7 @@ public with sharing class ToolingAPI {
     private HttpResponse submitRestCall(String relativeUrl, String method, Object data){
         Http h = new Http();
         HttpRequest queryReq = new HttpRequest();
-        queryReq.setEndpoint(URL.getSalesforceBaseUrl().toExternalForm() + TOOLING_API_URI + relativeUrl);
+        queryReq.setEndpoint(URL.getOrgDomainUrl().toExternalForm() + TOOLING_API_URI + relativeUrl);
         queryReq.setHeader('Authorization', 'OAuth ' + this.sessionId);
         queryReq.setHeader('Content-Type', 'application/json');
         queryReq.setMethod(method);
@@ -1619,6 +1619,7 @@ public with sharing class ToolingAPI {
      * Helper method for parsing query results
      **/
     private QueryResult parseQueryResult(String jsonStr){
+        System.debug(jsonStr);
         QueryResult queryResult = (QueryResult)JSON.deserialize(jsonStr, ToolingAPI.QueryResult.class);
         queryResult.records = getQueryResultRecords(jsonStr);
         return queryResult;
