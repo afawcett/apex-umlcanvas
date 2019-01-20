@@ -40,7 +40,7 @@ Installing the Tool
 
 ### Package Versions
 
- - v1.6 [Production Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000CxVy) or [Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000CxVy) - Fix for issue [14](https://github.com/afawcett/apex-umlcanvas/issues/14) collection size exceeded. Also migrated repo to SFDX and added Lightning support. Remote Site setup no longer required for My Domain orgs.
+ - v1.7 [Production Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t0H000001ICQm) or [Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04t0H000001ICQm) - Fix for issue [14](https://github.com/afawcett/apex-umlcanvas/issues/14) collection size exceeded. Also migrated repo to SFDX and added Lightning support. Remote Site setup no longer required for My Domain orgs.
 
  - v1.5 Package install [link](https://login.salesforce.com/packaging/installPackage.apexp?p0=04ti0000000CqNM) - Fix for issue [5](https://github.com/afawcett/apex-umlcanvas/issues/5)
  
