@@ -25,95 +25,36 @@
 **/
 
 /**
+ * IMPORTANT NOTE: This is a reduced version of this file to remove unused code from coverage
+ **/
+
+/**
  * Some initial tests to get things started!
  **/
 @IsTest
 private class ToolingAPITest
 {
-    static testmethod void testQueryCustomObjects(){
-		Test.setMock(HttpCalloutMock.class, new ToolingAPIMock(testObjectResponse, 200));
-		ToolingAPI toolingAPI = new ToolingAPI();
-		List<ToolingAPI.CustomObject> result  = (List<ToolingAPI.CustomObject>)
-			toolingAPI.query('Select Id, DeveloperName, NamespacePrefix From CustomObject Where DeveloperName = \'Test\'').records;
-		System.assertEquals(result.size(), 1);
-		System.assertEquals(result[0].DeveloperName, 'Test');
-	}
-
-	static testmethod void testQueryCustomFields(){
-		Test.setMock(HttpCalloutMock.class, new ToolingAPIMock(testFieldResponse, 200));
-		ToolingAPI toolingAPI = new ToolingAPI();
-		List<ToolingAPI.CustomField> result = (List<ToolingAPI.CustomField>)
-			toolingAPI.query('Select Id, DeveloperName, NamespacePrefix, TableEnumOrId From CustomField Where TableEnumOrId = \'01IG00000021cXoMAI\'').records;
-		System.assertEquals(result.size(), 1);
-		System.assertEquals(result[0].DeveloperName, 'A_Number');
-	}
-
 	static testmethod void testQueryApexClassMember(){
 		Test.setMock(HttpCalloutMock.class, new ToolingAPIMock(testApexClassMemberQueryResponse, 200));
 		ToolingAPI.QueryResult result = 
 				(new ToolingAPI()).query('Select Id From ApexClassMember');
 		System.assertNotEquals(null,result);
 	}
-
-	static testmethod void testQueryApexClassMemberError(){
-		boolean exceptionEncountered = false;
-		Test.setMock(HttpCalloutMock.class, new ToolingAPIMock(testErrorResponse, 400));
-		ToolingAPI toolingAPI = new ToolingAPI();
-		try {
-			List<ToolingAPI.CustomField> result = (List<ToolingAPI.CustomField>)
-				toolingAPI.query('Select RandomField From ApexClassMember').records;
-		} catch (ToolingAPI.ToolingAPIException e){
-			exceptionEncountered = true;
-		}
-		System.assert(exceptionEncountered,'Expected exception');
-	}
-
+	
 	static testmethod void testCoverTypes(){
    		new ToolingAPI.AggregateExpressionResultColumnMetadata();
-		new ToolingAPI.AllowedWorkitemAction();
 		new ToolingAPI.ApexClass();
 		new ToolingAPI.ApexClassMetadata();
-		new ToolingAPI.ApexCodeCoverage();
-		new ToolingAPI.ApexCodeCoverageAggregate();
-		new ToolingAPI.ApexComponent();
-		new ToolingAPI.ApexExecutionOverlayAction();
-		new ToolingAPI.ApexLog();
-		new ToolingAPI.ApexOrgWideCoverage();
-		new ToolingAPI.ApexResult();
-		new ToolingAPI.ApexTestResult();
-		new ToolingAPI.ApexTestQueueItem();
-		new ToolingAPI.ApexPage();
 		new ToolingAPI.ApexClassMember();
-		new ToolingAPI.ApexTriggerMember();
 		new ToolingAPI.ApexComponentMember();
-		new ToolingAPI.ApexExecutionOverlayResult();
-		new ToolingAPI.ApexPageMember();
-		new ToolingAPI.ApexTrigger();
 		new ToolingAPI.ApiFault();
 		new ToolingAPI.ApiQueryFault();
 		new ToolingAPI.Attribute();
 		new ToolingAPI.AttributeDefinition();
-		new ToolingAPI.AsyncApexJob();
 		new ToolingAPI.BooleanValue();
 		new ToolingAPI.ChildRelationship();
 		new ToolingAPI.ComplexQueryResultColumnMetadata();
 		new ToolingAPI.ContainerAsyncRequest();
-		new ToolingAPI.Coverage();
-		new ToolingAPI.CustomField();
-		new ToolingAPI.CustomFieldMetadata();
-		new ToolingAPI.CustomObject();
-		new ToolingAPI.DescribeColorResult();
-		new ToolingAPI.DescribeColumn();
-		new ToolingAPI.DescribeGlobalResult();
-		new ToolingAPI.DescribeGlobalSObjectResult();
-		new ToolingAPI.DescribeIconResult();
-		new ToolingAPI.DescribeLayoutButton();
-		new ToolingAPI.DescribeLayoutItem();
-		new ToolingAPI.DescribeLayoutComponent();
-		new ToolingAPI.DescribeLayoutRow();
-		new ToolingAPI.DescribeLayoutSection();
-		new ToolingAPI.DescribeSObjectResult();
-		new ToolingAPI.DescribeWorkitemActionResult();
 		new ToolingAPI.Error();
 		new ToolingAPI.ErrorResponse();
 		new ToolingAPI.ExecuteAnonymousResult();
@@ -121,7 +62,6 @@ private class ToolingAPITest
 		new ToolingAPI.ExternalMethod();
 		new ToolingAPI.ExternalReference();
 		new ToolingAPI.ExternalSymbol();
-		new ToolingAPI.Field();
 		new ToolingAPI.FilterItem();
 		new ToolingAPI.HeapAddress();
 		new ToolingAPI.HeapDump();
@@ -134,32 +74,24 @@ private class ToolingAPITest
 		new ToolingAPI.MetadataContainer();
 		new ToolingAPI.MetadataContainerMember();
 		new ToolingAPI.Method();
-		new ToolingAPI.Name();
 		new ToolingAPI.NumberValue();
 		new ToolingAPI.PackageVersion();
 		new ToolingAPI.Parameter();
-		new ToolingAPI.Picklist();
-		new ToolingAPI.PicklistEntry();
 		new ToolingAPI.Position();
 		new ToolingAPI.PrimitiveQueryResultColumnMetadata();
 		new ToolingAPI.ProcessResult();
 		new ToolingAPI.QueryResult();
 		new ToolingAPI.QueryResultColumnMetadata();
 		new ToolingAPI.QueryResultMetadata();
-		new ToolingAPI.RecordTypeInfo();
-		new ToolingAPI.RecordTypePicklist();
 		new ToolingAPI.SaveResult();
 		new ToolingAPI.SetValue();
 		new ToolingAPI.SOQLResult();
-		new ToolingAPI.StaticResource();
-		new ToolingAPI.StateValue();
+		new ToolingAPI.StateValue(); 
 		new ToolingAPI.StringValue();
 		new ToolingAPI.SymbolTable();
 		new ToolingAPI.ToolingAPIException();
-		new ToolingAPI.TraceFlag();
 		new ToolingAPI.TypeExtent();
 		new ToolingAPI.UpsertResult();
-		new ToolingAPI.UserPreference();
 		new ToolingAPI.User_x();
 	}
 

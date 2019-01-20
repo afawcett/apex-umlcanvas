@@ -23,6 +23,10 @@
  *  OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
+
+/**
+ * IMPORTANT NOTE: This is a reduced version of this file to remove unused code from coverage
+ **/
 public with sharing class ToolingAPI {
 
     /**
@@ -100,94 +104,6 @@ public with sharing class ToolingAPI {
     }
 
     /**
-     * Describes all the sobjects via the tooling api.  This is the equivalent of
-     * calling //instance/api/tooling/sobjects via the Tooling REST API.
-     * @return a ToolingAPI DescribeGlobalResult
-     * @throws ToolingAPIException if an an exception was encountered.
-     */
-    public DescribeGlobalResult describeGlobal(){
-        return (DescribeGlobalResult)submitRestCallAndDeserialize('/sobjects',DescribeGlobalResult.class);
-    }
-
-    /**
-     * Describes a particular sobject via the tooling api.
-     * This is the equivalent of calling //instance/api/tooling/sobjects/{sobjectname}/describe
-     * @param The api name of the sobject to describe
-     * @return a ToolingAPI DescribeSObjectResult
-     * @throws ToolingAPIException if an exception was encountered
-     */
-    public DescribeSObjectResult describeSObject(String apiName){
-        return
-            (DescribeSObjectResult)
-                submitRestCallAndDeserialize(
-                    '/sobjects/'+apiName+'/describe'
-                    ,DescribeSObjectResult.class);
-    }
-
-    /**
-     * Execute code anonymously via the tooling api
-     * This is the equivalent of calling /executeAnonymous/?anonymousBody=body
-     * @param an already encoded body for executing anonymous code.
-     * @return a Tooling API ExecuteAnonymousResult record
-     * @throws ToolingAPIException if an exception was encountered
-     */
-    public ExecuteAnonymousResult executeAnonymousEncoded(String body){
-        return (ExecuteAnonymousResult)
-            submitRestCallAndDeserialize(
-                '/executeAnonymous/?anonymousBody='+body
-                ,ExecuteAnonymousResult.class);
-    }
-
-    /**
-     * Execute code anonymously via the tooling api
-     * This is the equivalent of calling /executeAnonymous/?anonymousBody=body
-     * This particular method encodes the body with UTF-8 by default.
-     * @param a String for executing anonymous code that WILL BE URL encoded with UTF-8
-     * @return a Tooling API ExecuteAnonymousResult record
-     * @throws ToolingAPIException if an exception was encountered
-     */
-    public ExecuteAnonymousResult executeAnonymousUnencoded(String body){
-        if(body != null){
-            body =  EncodingUtil.urlEncode(body, 'UTF-8');
-        }
-        return executeAnonymousEncoded(body);
-    }
-
-    /**
-     * Retrieve an Apex Log by its Id via the tooling api
-     * This is the equivalent of calling //instance/api/tooling/sobjects/ApexLog/{apexLogId}/Body/
-     * This method actually submits two REST callouts.. 1 to grab the ApexLog body and 1 to grab
-     * the rest of the ApexLog information.
-     * @param Id of the apex log to retrieve
-     * @return a ToolingAPI ApexLog
-     * @throws ToolingAPIException if an exception was encountered
-     */
-    public ApexLog retrieveApexLog(Id apexLogId){
-        String body = submitRestCall('/sobjects/ApexLog/'+apexLogId+'/Body/').getBody();
-
-        ApexLog log = (ToolingAPI.ApexLog)retrieveSObject(SObjectType.ApexLog,apexLogId);
-        
-        //Append the body from the first REST call to the ApexLog record.
-        log.body = body;
-
-        return log;
-    }
-
-    /**
-     * Generic method for retrieving an sobject of type by Id
-     * Assumes the class name in the ToolingAPI matches the REST api
-     * @param sobjType name of one of the valid Tooling API SObject's
-     * @param sobjectId Id of the applicable record to retrieve
-     */
-    public SObject_x retrieveSObject(SObjectType sobjType,Id sobjectId){
-        //Have to prefix the sobjType with outter class name before type casting
-        return (SObject_x) submitRestCallAndDeserialize(
-            '/sobjects/'+sobjType.name()+'/'+sobjectId
-            ,Type.forName('ToolingAPI.'+sobjType.name())
-        );
-    }
-
-    /**
      * Generic method for deleting an sobject record
      * @param sobjType name of one of the valid Tooling API SObject's
      * @param sobjectId Id of the applicable record to delete
@@ -196,18 +112,6 @@ public with sharing class ToolingAPI {
         return (ToolingAPI.SaveResult) submitRestCallAndDeserialize(
             '/sobjects/'+sobjType.name()+'/'+sobjectId
             ,ToolingAPI.SaveResult.class
-            ,'DELETE'
-        );
-    }
-
-    /**
-     * Generic method for deleting an sobject record
-     * @param sobjectRecord The sobject record to delete with id and type specified.
-     **/
-    public ToolingAPI.SaveResult deleteSObject(SObject_x sobjectRecord){
-        return (ToolingAPI.SaveResult) submitRestCallAndDeserialize(
-            '/sobjects/'+sobjectRecord.type_x+'/'+sobjectRecord.Id
-            ,null
             ,'DELETE'
         );
     }
@@ -226,42 +130,10 @@ public with sharing class ToolingAPI {
         );
     }
 
-    /**
-     * Generic methods for updating an sobject record
-     * @param sobjectRecord The sobject record to update.
-     **/
-    /* - Commented out per issue https://github.com/afawcett/apex-toolingapi/issues/12
-    public ToolingAPI.SaveResult updateSObject(SObject_x sobjectRecord)
-    {
-
-    	//ToolingAPI doesn't like having the Id in the body of the sobject upon update.. so null it out
-    	//But first, set it to temp variable for handling the request path.
-    	Id recordId = sobjectRecord.Id;
-    	sobjectRecord.Id = null;
-
-    	//Updates need to be "PATCH" methods, however, most clients balk at the PATCH method
-    	//Fix for this is to specify the _HttpMethod parameter.
-    	//For more info, see: http://salesforce.stackexchange.com/questions/13294/patch-request-using-apex-httprequest
-        return (SaveResult) submitRestCallAndDeserialize(
-            '/sobjects/'+sobjectRecord.type_x+'/'+recordId+'?_HttpMethod=PATCH'
-            ,SaveResult.class
-            ,'POST'
-            ,sobjectRecord
-        );
-    }*/
-
     //Public Inner Classes for Handling Tooling API Requests
 
     public class AggregateExpressionResultColumnMetadata {
         public String displayName;
-    }
-
-    public class AllowedWorkitemAction {
-        public boolean commentsRequired;
-        public String  label;
-        public String  name;
-        public boolean nextOwnerRequired;
-        public boolean versionRequired;
     }
 
     public class ApexClass extends SObject_x implements ISerialize {
@@ -302,137 +174,6 @@ public with sharing class ToolingAPI {
         public String                   status;
     }
 
-    public class ApexCodeCoverage extends SObject_x{
-        public SObject_x apexClassOrTrigger;
-        public Id        apexClassOrTriggerId;
-        public ApexClass apexTestClass;
-        public Id        apexTestClassId;
-        public Coverage  coverage;
-        public Boolean   isDeleted;
-        public Integer   numLinesCovered;
-        public Integer   numLinesUncovered;
-        public String    testMethodName;
-        public ApexCodeCoverage() {
-            super(SObjectType.ApexCodeCoverage);
-        }
-    }
-
-    public class ApexCodeCoverageAggregate extends SObject_x{
-        public SObject_x  apexClassOrTrigger;
-        public String     apexClassOrTriggerId;
-        public Coverage   coverage;
-        public DateTime   coverageLastModifiedDate;
-        public boolean    isDeleted;
-        public Integer    numLinesCovered;
-        public Integer    numLinesUncovered;
-        public ApexCodeCoverageAggregate() {
-            super(SObjectType.ApexCodeCoverageAggregate);
-        }
-    }
-
-    public class ApexComponent extends sObject_x{
-        public Double    apiVersion;
-        public String    controllerKey;
-        public String    controllerType;
-        public String    description;
-        public String    markup;
-        public String    masterLabel;
-        public String    name;
-        public String    namespacePrefix;
-        public ApexComponent() {
-            super(SObjectType.ApexComponent);
-        }
-    }
-
-    public class ApexExecutionOverlayAction extends SObject_x{
-        public String     actionScript;
-        public String     actionScriptType;
-        public DateTime   createdDate;
-        public SObject_x  executableEntity;
-        public Id         executableEntityId;
-        public DateTime   expirationDate;
-        public boolean    isDeleted;
-        public boolean    isDumpingHeap;
-        public Integer    iteration;
-        public Integer    line;
-        public User_x     scope;
-        public String     scopeId;
-        public ApexExecutionOverlayAction() {
-            super(SObjectType.ApexExecutionOverlayAction);
-        }
-    }
-
-    public class ApexLog extends SObject_x{
-        public String    application;
-        public Integer   durationMilliseconds;
-        public String    location;
-        public Integer   logLength;
-        public SObject_x logUser;
-        public Id        logUserId;
-        public String    operation;
-        public String    request;
-        public DateTime  startTime;
-        public String    status;
-        public String    body;
-        public ApexLog() {
-            super(SObjectType.ApexLog);
-        }
-    }
-
-    public class ApexOrgWideCoverage extends SObject_x{
-        public Integer    percentCovered;
-        public ApexOrgWideCoverage() {
-            super(SObjectType.ApexOrgWideCoverage);
-        }
-    }
-
-    public class ApexResult {
-        public String                 apexError;
-        public ExecuteAnonymousResult apexExecutionResult;
-    }
-
-    public class ApexTestResult {
-        public ApexClass         apexClass;
-        public String            apexClassId;
-        public ApexLog           apexLog;
-        public Id                apexLogId;
-        public AsyncApexJob      asyncApexJob;
-        public Id                asyncApexJobId;
-        public String            message;
-        public String            methodName;
-        public String            outcome;
-        public ApexTestQueueItem queueItem;
-        public Id                queueItemId;
-        public String            stackTrace;
-        public DateTime          systemModstamp;
-        public DateTime          testTimestamp;
-    }
-
-    public class ApexTestQueueItem {
-        public ApexClass  apexClass;
-        public Id         apexClassId;
-        public String     extendedStatus;
-        public Id         parentJobId;
-        public String     status;
-    }
-
-    public class ApexPage extends SObject_x{
-        public Double   apiVersion;
-        public String   controllerKey;
-        public String   controllerType;
-        public DateTime createdDate;
-        public String   description;
-        public boolean  isAvailableInTouch;
-        public boolean  isConfirmationTokenRequired;
-        public String   markup;
-        public String   masterLabel;
-        public String   name;
-        public String   namespacePrefix;
-        public ApexPage() {
-            super(SObjectType.ApexPage);
-        }
-    }
-
     public class ApexClassMember extends SObject_x implements ISerialize {
         public String            body;
         public String            content;
@@ -469,40 +210,6 @@ public with sharing class ToolingAPI {
         }
     }
 
-    public class ApexTriggerMember extends SObject_x implements ISerialize {
-        public String              body;
-        public String              content;
-        public ApexTrigger         contentEntity;
-        public Id                  contentEntityId;
-        public DateTime            lastSyncDate;
-        public Metadata            metadata;
-        public MetadataContainer   metadataContainer;
-        public Id                  metadataContainerId;
-        public SymbolTable         symbolTable;
-        public ApexTriggerMember() {
-            super(SObjectType.ApexTriggerMember);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(body!=null)
-                jsonGen.writeStringField('body', body);
-            if(content!=null)
-                jsonGen.writeStringField('content', content);
-            if(contentEntity!=null)
-                jsonGen.writeObjectField('contentEntity', contentEntity);
-            if(contentEntityId!=null)
-                jsonGen.writeIdField('contentEntityId', contentEntityId);
-            if(lastSyncDate!=null)
-                jsonGen.writeDateTimeField('lastSyncDate', lastSyncDate);
-            if(metadata!=null)
-                jsonGen.writeObjectField('metadata', metadata);
-            if(metadataContainerId!=null)
-                jsonGen.writeIdField('metadataContainerId', metadataContainerId);
-            if(symbolTable!=null)
-                jsonGen.writeObjectField('symbolTable', symbolTable);
-        }        
-    }
-
     public class ApexComponentMember extends SObject_x{
         public String            body;
         public String            content;
@@ -515,103 +222,6 @@ public with sharing class ToolingAPI {
         public ApexComponentMember() {
             super(SObjectType.ApexComponentMember);
         }
-    }
-
-    public class ApexExecutionOverlayResult extends SObject_x{
-        public String     actionScript;
-        public String     actionScriptType;
-        public ApexResult apexResult;
-        public String     className;
-        public DateTime   expirationDate;
-        public HeapDump   heapDump;
-        public boolean    isDeleted;
-        public boolean    isDumpingHeap;
-        public Integer    iteration;
-        public Integer    line;
-        public String     namespace;
-        public Integer    overlayResultLength;
-        public User_x     requestedBy;
-        public Id         requestedById;
-        public SOQLResult sOQLResult;
-        public User_x     user;
-        public Id         userId;
-        public ApexExecutionOverlayResult() {
-            super(SObjectType.ApexExecutionOverlayResult);
-        }
-    }
-
-    public class ApexPageMember extends SObject_x{
-        public String            body;
-        public String            content;
-        public ApexPage          contentEntity;
-        public String            contentEntityId;
-        public DateTime          lastSyncDate;
-        public Metadata          metadata;
-        public MetadataContainer metadataContainer;
-        public Id                metadataContainerId;
-        public ApexPageMember() {
-            super(SObjectType.ApexPageMember);
-        }
-    }
-
-    public class ApexTrigger extends SObject_x implements ISerialize {
-        public Double     apiVersion;
-        public String     body;
-        public Double     bodyCrc;
-        public boolean    isValid;
-        public Integer    lengthWithoutComments;
-        public String     name;
-        public String     namespacePrefix;
-        public String     status;
-        public Id         tableEnumOrId;
-        public boolean    usageAfterDelete;
-        public boolean    usageAfterInsert;
-        public boolean    usageAfterUndelete;
-        public boolean    usageAfterUpdate;
-        public boolean    usageBeforeDelete;
-        public boolean    usageBeforeInsert;
-        public boolean    usageBeforeUpdate;
-        public boolean    usageIsBulk;
-        public ApexTrigger() {
-            super(SObjectType.ApexTrigger);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(apiVersion!=null)
-                jsonGen.writeNumberField('apiVersion', apiVersion);
-            if(body!=null)
-                jsonGen.writeStringField('body', body);
-            if(bodyCrc!=null)
-                jsonGen.writeNumberField('bodyCrc', bodyCrc);
-            if(isValid!=null)
-                jsonGen.writeBooleanField('isValid', isValid);
-            if(lengthWithoutComments!=null)
-                jsonGen.writeNumberField('lengthWithoutComments', lengthWithoutComments);
-            if(name!=null)
-                jsonGen.writeStringField('name', name);
-            if(namespacePrefix!=null)
-                jsonGen.writeStringField('namespacePrefix', namespacePrefix);
-            if(status!=null)
-                jsonGen.writeStringField('status', status);
-            if(tableEnumOrId!=null)
-                jsonGen.writeIdField('tableEnumOrId', tableEnumOrId);
-            if(usageAfterDelete!=null)
-                jsonGen.writeBooleanField('usageAfterDelete', usageAfterDelete);
-            if(usageAfterInsert!=null)
-                jsonGen.writeBooleanField('usageAfterInsert', usageAfterInsert);
-            if(usageAfterUndelete!=null)
-                jsonGen.writeBooleanField('usageAfterUndelete', usageAfterUndelete);
-            if(usageAfterUpdate!=null)
-                jsonGen.writeBooleanField('usageAfterUpdate', usageAfterUpdate);
-            if(usageBeforeDelete!=null)
-                jsonGen.writeBooleanField('usageBeforeDelete', usageBeforeDelete);
-            if(usageBeforeInsert!=null)
-                jsonGen.writeBooleanField('usageBeforeInsert', usageBeforeInsert);
-            if(usageBeforeUpdate!=null)
-                jsonGen.writeBooleanField('usageBeforeUpdate', usageBeforeUpdate);
-            if(usageIsBulk!=null)
-                jsonGen.writeBooleanField('usageIsBulk', usageIsBulk);
-        }        
     }
 
     public class ApiFault {
@@ -634,54 +244,6 @@ public with sharing class ToolingAPI {
     public class AttributeDefinition {
         public String name;
         public String type_x;
-    }
-
-    public class AsyncApexJob extends SObject_x implements ISerialize {
-        public ApexClass  apexClass;
-        public Id         apexClassId;
-        public DateTime   completedDate;
-        public String     extendedStatus;
-        public Integer    jobItemsProcessed;
-        public String     jobType;
-        public String     lastProcessed;
-        public Integer    lastProcessedOffset;
-        public String     methodName;
-        public Integer    numberOfErrors;
-        public Id         parentJobId;
-        public String     status;
-        public Integer    totalJobItems;
-        public AsyncApexJob() {
-            super(SObjectType.AsyncApexJob);
-        }        
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(apexClass!=null)
-                jsonGen.writeObjectField('apexClass', apexClass);
-            if(apexClassId!=null)
-                jsonGen.writeIdField('apexClassId', apexClassId);
-            if(completedDate!=null)
-                jsonGen.writeDateTimeField('completedDate', completedDate);
-            if(extendedStatus!=null)
-                jsonGen.writeStringField('extendedStatus', extendedStatus);
-            if(jobItemsProcessed!=null)
-                jsonGen.writeNumberField('jobItemsProcessed', jobItemsProcessed);
-            if(jobType!=null)
-                jsonGen.writeStringField('jobType', jobType);
-            if(lastProcessed!=null)
-                jsonGen.writeStringField('lastProcessed', lastProcessed);
-            if(lastProcessedOffset!=null)
-                jsonGen.writeNumberField('lastProcessedOffset', lastProcessedOffset);
-            if(methodName!=null)
-                jsonGen.writeStringField('methodName', methodName);
-            if(numberOfErrors!=null)
-                jsonGen.writeNumberField('numberOfErrors', numberOfErrors);
-            if(parentJobId!=null)
-                jsonGen.writeIdField('parentJobId', parentJobId);
-            if(status!=null)
-                jsonGen.writeStringField('status', status);
-            if(totalJobItems!=null)
-                jsonGen.writeNumberField('totalJobItems', totalJobItems);
-        }        
     }
     
     public class BooleanValue {
@@ -745,218 +307,6 @@ public with sharing class ToolingAPI {
         public Integer[] uncoveredLines;
     }
 
-    public class CustomField extends SObject_x implements ISerialize {
-        public String              fullName;
-        public String              developerName;
-        public CustomFieldMetadata metadata;
-        public String              namespacePrefix;
-        public String              tableEnumOrId;
-        public CustomField() {
-            super(SObjectType.CustomField);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(fullName!=null)
-                jsonGen.writeStringField('fullName', fullName);
-            if(developerName!=null)
-                jsonGen.writeStringField('developerName', developerName);
-            if(metadata!=null)
-                jsonGen.writeObjectField('metadata', metadata);
-            if(namespacePrefix!=null)
-                jsonGen.writeStringField('namespacePrefix', namespacePrefix);
-            if(tableEnumOrId!=null)
-                jsonGen.writeStringField('tableEnumOrId', tableEnumOrId);
-        }        
-    }
-
-    public class CustomFieldMetadata {
-        public boolean      caseSensitive;
-        public String       customDataType;
-        public String       defaultValue;
-        public String       deleteConstraint;
-        public boolean      deprecated;
-        public String       description;
-        public String       displayFormat;
-        public boolean      escapeMarkup;
-        public String       externalDeveloperName;
-        public boolean      externalId;
-        public String       formula;
-        public String       formulaTreatBlanksAs;
-        public String       inlineHelpText;
-        public boolean      isFilteringDisabled;
-        public boolean      isNameField;
-        public boolean      isSortingDisabled;
-        public String       label;
-        public Integer      length;
-        public String       maskChar;
-        public String       maskType;
-        public Picklist     picklist;
-        public boolean      populateExistingRows;
-        public Integer      precision;
-        public String       referenceTo;
-        public String       relationshipLabel;
-        public String       relationshipName;
-        public Integer      relationshipOrder;
-        public boolean      reparentableMasterDetail;
-        public boolean      required;
-        public boolean      restrictedAdminField;
-        public Integer      scale;
-        public Integer      startingNumber;
-        public boolean      stripMarkup;
-        public String       summarizedField;
-        public FilterItem[] summaryFilterItems;
-        public String       summaryForeignKey;
-        public String       summaryOperation;
-        public boolean      trackFeedHistory;
-        public boolean      trackHistory;
-        public boolean      trackTrending;
-        public String       type_x;
-        public boolean      unique;
-        public Integer      visibleLines;
-        public boolean      writeRequiresMasterRead;
-    }
-
-    public class CustomObject extends SObject_x implements ISerialize {
-        public String developerName;
-        public String externalDataSourceId;
-        public String namespacePrefix;
-        public CustomObject() {
-            super(SObjectType.CustomObject);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(developerName!=null)
-                jsonGen.writeStringField('developerName', developerName);
-            if(externalDataSourceId!=null)
-                jsonGen.writeStringField('externalDataSourceId', externalDataSourceId);
-            if(namespacePrefix!=null)
-                jsonGen.writeStringField('namespacePrefix', namespacePrefix);
-        }        
-    }
-
-    public class DescribeColorResult {
-        public String color;
-        public String context;
-        public String theme;
-    }
-
-    public class DescribeColumn {
-        public String field;
-        public String format;
-        public String label;
-        public String name;
-    }
-
-    public class DescribeGlobalResult {
-        public String encoding;
-        public Integer maxBatchSize;
-        public DescribeGlobalSObjectResult[] sobjects;
-    }
-
-    public class DescribeGlobalSObjectResult {
-        public boolean activateable;
-        public boolean createable;
-        public boolean custom;
-        public boolean customSetting;
-        public boolean deletable;
-        public boolean deprecatedAndHidden;
-        public boolean feedEnabled;
-        public String  keyPrefix;
-        public String  label;
-        public String  labelPlural;
-        public boolean layoutable;
-        public boolean mergeable;
-        public String  name;
-        public boolean queryable;
-        public boolean replicateable;
-        public boolean retrieveable;
-        public boolean searchable;
-        public boolean triggerable;
-        public boolean undeletable;
-        public boolean updateable;
-    }
-
-    public class DescribeIconResult {
-        public String  contentType;
-        public Integer height;
-        public String  theme;
-        public String  url;
-        public Integer width;
-    }
-
-    public class DescribeLayoutButton {
-        public boolean              custom;
-        public DescribeIconResult[] icons;
-        public String               label;
-        public String               name;
-    }
-
-    public class DescribeLayoutItem {
-        public boolean                   editable;
-        public String                    label;
-        public DescribeLayoutComponent[] layoutComponents;
-        public boolean                   placeholder;
-        public boolean                   required;
-    }
-
-    public class DescribeLayoutComponent {
-        public Integer displayLines;
-        public Integer tabOrder;
-        public String  type_x;
-        public String  value;
-    }
-
-    public class DescribeLayoutRow {
-        public DescribeLayoutItem[] layoutItems;
-        public Integer              numItems;
-    }
-
-    public class DescribeLayoutSection {
-        public Integer             columns;
-        public String              heading;
-        public DescribeLayoutRow[] layoutRows;
-        public Integer             rows;
-        public boolean             useCollapsibleSection;
-        public boolean             useHeading;
-    }
-
-    public class DescribeSObjectResult {
-        public boolean             activateable;
-        public ChildRelationship[] childRelationships;
-        public boolean             createable;
-        public boolean             custom;
-        public boolean             customSetting;
-        public boolean             deletable;
-        public boolean             deprecatedAndHidden;
-        public boolean             feedEnabled;
-        public Field[]             fields;
-        public String              keyPrefix;
-        public String              label;
-        public String              labelPlural;
-        public boolean             layoutable;
-        public boolean             listviewable;
-        public boolean             lookupLayoutable;
-        public boolean             mergeable;
-        public String              name;
-        public boolean             queryable;
-        public RecordTypeInfo[]    recordTypeInfos;
-        public boolean             replicateable;
-        public boolean             retrieveable;
-        public boolean             searchLayoutable;
-        public boolean             searchable;
-        public boolean             triggerable;
-        public boolean             undeletable;
-        public boolean             updateable;
-    }
-
-    public class DescribeWorkitemActionResult {
-        public AllowedWorkitemAction[] actions;
-        public Error[]                 errors;
-        public boolean                 success;
-        public Id                      targetObjectId;
-        public String                  workitemId;
-    }
-
     public class Error {
         public String[] fields;
         public String   message;
@@ -999,51 +349,6 @@ public with sharing class ToolingAPI {
     public virtual class ExternalSymbol {
         public String     name;
         public Position[] references;
-    }
-
-    public class Field {
-        public boolean         autoNumber;
-        public Integer         byteLength;
-        public boolean         calculated;
-        public String          calculatedFormula;
-        public boolean         cascadeDelete;
-        public boolean         caseSensitive;
-        public String          controllerName;
-        public boolean         createable;
-        public boolean         custom;
-        public String          defaultValueFormula;
-        public boolean         defaultedOnCreate;
-        public boolean         dependentPicklist;
-        public boolean         deprecatedAndHidden;
-        public Integer         digits;
-        public boolean         displayLocationInDecimal;
-        public boolean         externalId;
-        public boolean         filterable;
-        public boolean         groupable;
-        public boolean         htmlFormatted;
-        public boolean         idLookup;
-        public String          inlineHelpText;
-        public String          label;
-        public Integer         length;
-        public String          name;
-        public boolean         nameField;
-        public boolean         namePointing;
-        public boolean         nillable;
-        public boolean         permissionable;
-        public PicklistEntry[] picklistValues;
-        public Integer         precision;
-        public String[]        referenceTo;
-        public String          relationshipName;
-        public Integer         relationshipOrder;
-        public boolean         restrictedDelete;
-        public boolean         restrictedPicklist;
-        public Integer         scale;
-        public String          soapType;
-        public boolean         sortable;
-        public String          type_x;
-        public boolean         unique;
-        public boolean         updateable;
-        public boolean         writeRequiresMasterRead;
     }
 
     public class FilterItem {
@@ -1153,60 +458,6 @@ public with sharing class ToolingAPI {
         public String returnType;
     }
 
-    public class Name extends SObject_x implements ISerialize {
-        public String   alias;
-        public String   email;
-        public String   firstName;
-        public Boolean  isActive;
-        public String   lastName;
-        public DateTime lastReferencedDate;
-        public DateTime lastViewedDate;
-        public String   name;
-        public String   phone;
-        public Id       profileId;
-        public Id       recordTypeId;
-        public String   title;
-        public String   type_x;
-        public Id       userRoleId;
-        public String   username;
-        public Name() {
-            super(SObjectType.Name);
-        } 
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(alias!=null)
-                jsonGen.writeStringField('alias', alias);            
-            if(email!=null)
-                jsonGen.writeStringField('email', email);            
-            if(firstName!=null)
-                jsonGen.writeStringField('firstName', firstName);            
-            if(isActive!=null)
-                jsonGen.writeBooleanField('isActive', isActive);            
-            if(lastName!=null)
-                jsonGen.writeStringField('lastName', lastName);            
-            if(lastReferencedDate!=null)
-                jsonGen.writeDateTimeField('lastReferencedDate', lastReferencedDate);            
-            if(lastViewedDate!=null)
-                jsonGen.writeDateTimeField('lastViewedDate', lastViewedDate);            
-            if(name!=null)
-                jsonGen.writeStringField('name', name);            
-            if(phone!=null)
-                jsonGen.writeStringField('phone', phone);            
-            if(profileId!=null)
-                jsonGen.writeIdField('profileId', profileId);            
-            if(recordTypeId!=null)
-                jsonGen.writeIdField('recordTypeId', recordTypeId);            
-            if(title!=null)
-                jsonGen.writeStringField('title', title);            
-            if(type_x!=null)
-                jsonGen.writeStringField('type', type_x);            
-            if(userRoleId!=null)
-                jsonGen.writeIdField('userRoleId', userRoleId);  
-            if(username!=null)
-                jsonGen.writeStringField('username', lastName);                          
-        }               
-    }
-
     public class NumberValue {
         public Double value;
     }
@@ -1220,19 +471,6 @@ public with sharing class ToolingAPI {
     public class Parameter {
         public String name;
         public String type;
-    }
-
-    public class Picklist {
-        public String controllingField;
-        public Boolean sorted;
-    }
-
-    public class PicklistEntry {
-        public boolean active;
-        public boolean defaultValue;
-        public String  label;
-        public String  validFor;
-        public String  value;
     }
 
     public class Position {
@@ -1278,18 +516,6 @@ public with sharing class ToolingAPI {
         public String                      keyPrefix;
     }
 
-    public class RecordTypeInfo {
-        public boolean available;
-        public boolean defaultRecordTypeMapping;
-        public String  name;
-        public Id      recordTypeId;
-    }
-
-    public class RecordTypePicklist {
-        public String picklistName;
-        public PicklistEntry[] picklistValues;
-    }
-
     public class SaveResult {
         public Error[] errors;
         public String  id;
@@ -1328,36 +554,6 @@ public with sharing class ToolingAPI {
         public String queryError;
         public QueryResultMetadata queryMetadata;
         public MapValue[] queryResult;
-    }
-
-    public class StaticResource extends SObject_x implements ISerialize {
-        public String  body;
-        public Integer bodyLength;
-        public String  cacheControl;
-        public String  contentType;
-        public String  description;
-        public String  name;
-        public String  namespacePrefix;
-        public StaticResource() {
-            super(SObjectType.StaticResource);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(body!=null)
-                jsonGen.writeStringField('body', body);
-            if(bodyLength!=null)
-                jsonGen.writeNumberField('bodyLength', bodyLength);
-            if(cacheControl!=null)
-                jsonGen.writeStringField('cacheControl', cacheControl);
-            if(contentType!=null)
-                jsonGen.writeStringField('contentType', contentType);
-            if(description!=null)
-                jsonGen.writeStringField('description', description);
-            if(name!=null)
-                jsonGen.writeStringField('name', name);
-            if(namespacePrefix!=null)
-                jsonGen.writeStringField('namespacePrefix', namespacePrefix);
-        }        
     }
 
     public class StateValue {}
@@ -1399,52 +595,6 @@ public with sharing class ToolingAPI {
     {
     	
     }
-    
-    public class TraceFlag extends SObject_x implements ISerialize {
-        public String     apexCode;
-        public String     apexProfiling;
-        public String     callout;
-        public String     database;
-        public DateTime   expirationDate;
-        public User_x     scope;
-        public Id         scopeId;
-        public String     system_x;
-        public SObject_x  tracedEntity;
-        public Id         tracedEntityId;
-        public String     validation;
-        public String     visualforce;
-        public String     workflow;
-        public TraceFlag() {
-            super(SObjectType.TraceFlag);
-        }        
-        public virtual void seralize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(apexCode!=null)
-                jsonGen.writeStringField('apexCode', apexCode);
-            if(apexProfiling!=null)
-                jsonGen.writeStringField('apexProfiling', apexProfiling);
-            if(callout!=null)
-                jsonGen.writeStringField('callout', callout);
-            if(expirationDate!=null)
-                jsonGen.writeDateTimeField('expirationDate', expirationDate);
-            if(scope!=null)
-                jsonGen.writeObjectField('scope', scope);
-            if(scopeId!=null)
-                jsonGen.writeIdField('scopeId', scopeId);
-            if(system_x!=null)
-                jsonGen.writeStringField('system', system_x);
-            if(tracedEntity!=null)
-                jsonGen.writeObjectField('tracedEntity', tracedEntity);
-            if(tracedEntityId!=null)
-                jsonGen.writeStringField('tracedEntityId', tracedEntityId);
-            if(validation!=null)
-                jsonGen.writeStringField('validation', validation);
-            if(visualforce!=null)
-                jsonGen.writeStringField('visualforce', visualforce);
-            if(workflow!=null)
-                jsonGen.writeStringField('workflow', visualforce);
-        }        
-    }
 
     public class TypeExtent {
         public String                collectionType;
@@ -1460,24 +610,6 @@ public with sharing class ToolingAPI {
         public Error[] errors;
         public Id      id;
         public boolean success;
-    }
-
-    public class UserPreference extends SObject_x implements ISerialize {
-        public String   preference;
-        public Id       userId;
-        public String   value;
-        public UserPreference() {
-        	super(SObjectType.UserPreference);
-        }
-        public override void serialize(JSONGenerator jsonGen) {
-            super.serialize(jsonGen);
-            if(preference!=null)
-                jsonGen.writeStringField('preference', preference);
-            if(userId!=null)
-                jsonGen.writeIdField('userId', userId);
-            if(value!=null)
-                jsonGen.writeStringField('value', value);
-        }        
     }
 
     public class User_x extends SObject_x implements ISerialize {
