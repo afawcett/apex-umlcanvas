@@ -33,10 +33,12 @@ Installing the Tool
 
 - Install via the **latest package link below**
 - Ensure your **Apex classes are compiled**
+- Assign the **Apex UML** permission set
 - Go to **Apex Classes** page and click the **Compile all classes** link
 - Navigate to the **Apex UML** page and select a class
-- You will see a **Remote Site** setting message popup, follow it and then reload the page.
 - Your good to go!
+
+**NOTE:** If your org is not using My Domain, you will see a **Remote Site** setting message popup, follow it and then reload the page.
 
 ### Package Versions
 
